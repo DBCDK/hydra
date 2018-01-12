@@ -1,0 +1,29 @@
+{
+  "name": "hydra",
+  "version": "0.0.1",
+  "dependencies": {
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-table": "^6.7.6",
+    "superagent": "^3.8.2",
+    "popper": "^1.0.1",
+    "react-bootstrap": "^0.32.0",
+    "react-bootstrap-table": "^4.3.1"
+  },
+  "license": "GPL-3.0",
+  "scripts": {
+    "build": "webpack -p",
+    "dev-server": "webpack-dev-server"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-stage-0": "^6.16.0",
+    "babel-preset-react": "^6.24.1",
+    "webpack": "^3.10.0",
+    "webpack-dev-server": "2.9.7"
+  },
+  "description": "Hydra GUI"
+}
