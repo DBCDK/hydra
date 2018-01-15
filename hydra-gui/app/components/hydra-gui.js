@@ -3,10 +3,11 @@
  * See license text at https://opensource.dbc.dk/licenses/gpl-3.0
  */
 
-import React from "react";
-import {Tab, Tabs} from "react-bootstrap";
+import React from "react"
+import {Tab, Tabs} from "react-bootstrap"
 import HydraQueueGUI from "./hydra-queue-gui"
 import HydraStatisticsGUI from "./hydra-statistics-gui"
+import superagent from "superagent"
 
 const TAB_QUEUE = 2;
 const TAB_STATISTICS = 3;
@@ -15,7 +16,8 @@ class HydraGUI extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            key: TAB_QUEUE
+            key: TAB_QUEUE,
+            instanceName: null
         };
 
         this.handleSelect = this.handleSelect.bind(this);
@@ -39,10 +41,31 @@ class HydraGUI extends React.Component {
         }
     }
 
+    getInstanceName() {
+        superagent.get('/api/hydra/instance').end((err, res) => {
+            let response = res.body;
+
+            if (response === null) {
+                alert('FEJL!\n\nDer kom tomt svar tilbage fra api/hydra/instance');
+            } else {
+                this.setState({instanceName: response.value})
+            }
+        });
+    }
+
+    getHeader() {
+        if (this.state.instanceName === null) {
+            this.getInstanceName();
+            return 'RawRepo HYDRA';
+        } else {
+            return 'RawRepo HYDRA - ' + this.state.instanceName;
+        }
+    }
+
     render() {
         return (
             <div className="container-fluid" id="root-render">
-                <h2>Server: localhost</h2>
+                <h1 title='Hydra: Multi headed beast guarding the entrance to the Underworld'>{this.getHeader()}</h1>
                 <Tabs activeKey={this.state.key}
                       onSelect={this.handleSelect}
                       id="controlled-tab-example">
