@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x
+#set -x
 # If this script is run by intellij, the docker must be detached since the run window isn't a tty. Therefore the default is -d.
 # Console output can be seen with docker logs -f <container_ID>.
 # If no version is specified, a new image will be build tagged as ${USER}
