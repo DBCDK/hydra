@@ -98,9 +98,6 @@ pipeline {
             archiveArtifacts '**/target/*.war'
             warnings canComputeNew: false, canResolveRelativePaths: false, categoriesPattern: '', consoleParsers: [[parserName: 'Java Compiler (javac)']], defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', messagesPattern: '', unHealthy: ''
         }
-        success {
-
-        }
     }
 
 }
