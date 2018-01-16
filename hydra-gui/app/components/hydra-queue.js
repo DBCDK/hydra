@@ -13,7 +13,7 @@ const MODE_VALIDATED = 10;
 const MODE_PROCESSING = 20;
 const MODE_PROCESSED = 30;
 
-class HydraQueueGUI extends React.Component {
+class HydraQueue extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -391,4 +391,4 @@ class HydraQueueGUI extends React.Component {
     }
 }
 
-export default HydraQueueGUI;
+export default HydraQueue;

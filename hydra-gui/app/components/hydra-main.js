@@ -5,14 +5,14 @@
 
 import React from "react"
 import {Tab, Tabs} from "react-bootstrap"
-import HydraQueueGUI from "./hydra-queue-gui"
-import HydraStatisticsGUI from "./hydra-statistics-gui"
+import HydraQueueGUI from "./hydra-queue"
+import HydraStatisticsGUI from "./hydra-statistics"
 import superagent from "superagent"
 
 const TAB_QUEUE = 2;
 const TAB_STATISTICS = 3;
 
-class HydraGUI extends React.Component {
+class HydraMain extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -81,4 +81,4 @@ class HydraGUI extends React.Component {
     }
 }
 
-export default HydraGUI;
+export default HydraMain;

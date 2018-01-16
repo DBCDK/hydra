@@ -8,7 +8,7 @@ import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import {Button} from 'react-bootstrap';
 import superagent from 'superagent';
 
-class HydraStatisticsGUI extends React.Component {
+class HydraStatistics extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -211,4 +211,4 @@ class HydraStatisticsGUI extends React.Component {
     }
 }
 
-export default HydraStatisticsGUI;
+export default HydraStatistics;
