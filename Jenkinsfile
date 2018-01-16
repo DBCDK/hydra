@@ -17,7 +17,7 @@ pipeline {
     }
 
     tools {
-        maven 'Maven 3.5'
+        maven 'maven 3.5'
     }
 
     stages {
@@ -30,7 +30,7 @@ pipeline {
                 """
 
                 echo '---------------------------------------------------------'
-                echo    ${env.JOB_NAME}
+                echo '   ${env.JOB_NAME}'
                 echo '---------------------------------------------------------'
             }
         }
