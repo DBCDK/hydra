@@ -33,13 +33,9 @@ fi
 if [ "$version" = "${USER}" ]
 then
 	hop=`pwd`
-    cd ../hydra-api
     echo "Building ${package}"
 	mvn clean package > /tmp/mvn.out.${USER}.${package}
 	echo "Done building"
-    cd ../docker
-    rm *.war
-    cp ../hydra-api/target/*war .
     docker build -t ${docker_image}:${USER} .
     cc=$?
     if [ ${cc} -ne 0 ]

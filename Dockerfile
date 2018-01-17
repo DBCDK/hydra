@@ -1,7 +1,7 @@
 FROM docker.dbc.dk/payara-micro:latest
 
-ADD config.d/* config.d
-ADD *.war wars/
+ADD docker/config.d/* config.d
+ADD hydra-api/target/*.war wars
 
 ENV LOGBACK_FILE file:///data/logback-include-stdout.xml
 
