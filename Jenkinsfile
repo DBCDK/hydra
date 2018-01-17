@@ -58,7 +58,10 @@ pipeline {
                     def name = "hydra-service"
                     def version = env.BUILD_NUMBER
 
-                    if (env.BRANCH_NAME != 'master') {
+                    // Apparently the 'master' git branch is called 'trunk' in a Jenkins pipeline build
+                    def isMasterBranch = env.BRANCH_NAME ==~ /master|trunk/
+
+                    if (!isMasterBranch) {
                         def branchSplit = env.BRANCH_NAME.split('/')
                         def gitBranchName = branchSplit[1]
                         version = gitBranchName + '-' + env.BUILD_NUMBER
@@ -68,7 +71,8 @@ pipeline {
 
                     image.push()
 
-                    if (env.BRANCH_NAME == 'master') {
+                    if (isMasterBranch) {
+                        echo 'Pushing build to latest'
                         image.push('latest')
                     }
                 }
