@@ -41,6 +41,7 @@
         <junit.version>5.0.2</junit.version>
         <maven.install.plugin.version>2.5.2</maven.install.plugin.version>
         <maven.javadoc.plugin.version>2.10.1</maven.javadoc.plugin.version>
+        <maven.surefire.version>2.20.1</maven.surefire.version>
         <mockito.version>2.12.0</mockito.version>
         <net.logstash.logback.version>3.1</net.logstash.logback.version>
         <org.apache.commons.collection4.version>4.1</org.apache.commons.collection4.version>
@@ -186,10 +187,13 @@
                 <artifactId>maven-compiler-plugin</artifactId>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven.surefire.version}</version>
                 <configuration>
                     <systemPropertyVariables>
                         <targetClasses>${project.build.outputDirectory}</targetClasses>
+                        <redirectTestOutputToFile>true</redirectTestOutputToFile>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
