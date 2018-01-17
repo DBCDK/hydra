@@ -58,7 +58,7 @@ pipeline {
                     def name = "hydra-service"
                     def version = env.BUILD_NUMBER
 
-                    if (env.BRANCH_NAME != 'master') {
+                    if (!env.BRANCH_NAME ==~ /master|trunk/ ) {
                         def branchSplit = env.BRANCH_NAME.split('/')
                         def gitBranchName = branchSplit[1]
                         version = gitBranchName + '-' + env.BUILD_NUMBER
