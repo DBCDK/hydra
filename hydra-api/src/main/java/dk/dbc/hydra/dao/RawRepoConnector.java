@@ -360,19 +360,8 @@ public class RawRepoConnector {
         LOGGER.entry();
         List<QueueStats> result = new ArrayList<>();
 
-        try (Connection connection = globalDataSource.getConnection();
-             Statement stmt = connection.createStatement()) {
-            try (ResultSet resultSet = stmt.executeQuery(SELECT_QUEUE_COUNT_BY_WORKER)) {
-                while (resultSet.next()) {
-                    final String text = resultSet.getString("text");
-                    final int count = resultSet.getInt("count");
-                    final String date = resultSet.getString("max");
-
-                    result.add(new QueueStats(text, count, date));
-                }
-            }
-
-            return result;
+        try {
+            return result = getQueueStats(SELECT_QUEUE_COUNT_BY_WORKER);
         } finally {
             LOGGER.exit(result);
         }
@@ -382,19 +371,8 @@ public class RawRepoConnector {
         LOGGER.entry();
         List<QueueStats> result = new ArrayList<>();
 
-        try (Connection connection = globalDataSource.getConnection();
-             Statement stmt = connection.createStatement()) {
-            try (ResultSet resultSet = stmt.executeQuery(SELECT_QUEUE_COUNT_BY_AGENCY)) {
-                while (resultSet.next()) {
-                    final String text = resultSet.getString("text");
-                    final int count = resultSet.getInt("count");
-                    final String date = resultSet.getString("max");
-
-                    result.add(new QueueStats(text, count, date));
-                }
-            }
-
-            return result;
+        try {
+            return result = getQueueStats(SELECT_QUEUE_COUNT_BY_AGENCY);
         } finally {
             LOGGER.exit(result);
         }
@@ -404,9 +382,20 @@ public class RawRepoConnector {
         LOGGER.entry();
         List<QueueStats> result = new ArrayList<>();
 
+        try {
+            return result = getQueueStats(SELECT_QUEUE_COUNT_BY_ERROR);
+        } finally {
+            LOGGER.exit(result);
+        }
+    }
+
+    private List<QueueStats> getQueueStats(String queueQuery) throws SQLException {
+        LOGGER.entry(queueQuery);
+        List<QueueStats> result = new ArrayList<>();
+
         try (Connection connection = globalDataSource.getConnection();
              Statement stmt = connection.createStatement()) {
-            try (ResultSet resultSet = stmt.executeQuery(SELECT_QUEUE_COUNT_BY_ERROR)) {
+            try (ResultSet resultSet = stmt.executeQuery(queueQuery)) {
                 while (resultSet.next()) {
                     final String text = resultSet.getString("text");
                     final int count = resultSet.getInt("count");
