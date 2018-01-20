@@ -69,7 +69,7 @@ public class StatisticsAPI {
         String res = "";
 
         try {
-            final List<QueueStats> queueStats = rawrepo.getStatsQueueByWorker();
+            final List<QueueStats> queueStats = rawrepo.getQueueStatsByWorker();
 
             res = jsonbContext.marshall(queueStats);
 
@@ -91,7 +91,7 @@ public class StatisticsAPI {
         String res = "";
 
         try {
-            final List<QueueStats> queueStats = rawrepo.getStatsQueueByAgency();
+            final List<QueueStats> queueStats = rawrepo.getQueueStatsByAgency();
 
             res = jsonbContext.marshall(queueStats);
 
@@ -113,7 +113,7 @@ public class StatisticsAPI {
         String res = "";
 
         try {
-            final List<QueueStats> queueStats = rawrepo.getStatsQueueByError();
+            final List<QueueStats> queueStats = rawrepo.getQueueStatsByError();
 
             res = jsonbContext.marshall(queueStats);
 

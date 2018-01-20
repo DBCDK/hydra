@@ -54,8 +54,8 @@ public class RawRepoConnector {
                     "ORDER  BY agencyid";
 
     private static final String SELECT_QUEUE_COUNT_BY_WORKER = "SELECT worker AS text, COUNT(*), MAX(queued) FROM queue GROUP BY worker ORDER BY worker";
-    private static final String SELECT_QUEUE_COUNT_BY_AGENCY = "SELECT agencyid AS text, COUNT(*), MAX(queued)  FROM queue GROUP BY agencyid ORDER BY agencyid";
-    private static final String SELECT_QUEUE_COUNT_BY_ERROR = "SELECT error AS text, COUNT(*), MAX(queued)  FROM jobdiag GROUP BY error ORDER BY max(queued) DESC";
+    private static final String SELECT_QUEUE_COUNT_BY_AGENCY = "SELECT agencyid AS text, COUNT(*), MAX(queued) FROM queue GROUP BY agencyid ORDER BY agencyid";
+    private static final String SELECT_QUEUE_COUNT_BY_ERROR = "SELECT error AS text, COUNT(*), MAX(queued) FROM jobdiag WHERE queued > now() - INTERVAL '30 DAYS' GROUP BY error ORDER BY MAX(queued) DESC";
 
     @Resource(lookup = "jdbc/rawrepo")
     private DataSource globalDataSource;
@@ -356,57 +356,46 @@ public class RawRepoConnector {
         }
     }
 
-    public List<QueueStats> getStatsQueueByWorker() throws SQLException {
+    public List<QueueStats> getQueueStatsByWorker() throws SQLException {
         LOGGER.entry();
         List<QueueStats> result = new ArrayList<>();
 
-        try (Connection connection = globalDataSource.getConnection();
-             Statement stmt = connection.createStatement()) {
-            try (ResultSet resultSet = stmt.executeQuery(SELECT_QUEUE_COUNT_BY_WORKER)) {
-                while (resultSet.next()) {
-                    final String text = resultSet.getString("text");
-                    final int count = resultSet.getInt("count");
-                    final String date = resultSet.getString("max");
-
-                    result.add(new QueueStats(text, count, date));
-                }
-            }
-
-            return result;
+        try {
+            return result = getQueueStats(SELECT_QUEUE_COUNT_BY_WORKER);
         } finally {
             LOGGER.exit(result);
         }
     }
 
-    public List<QueueStats> getStatsQueueByAgency() throws SQLException {
+    public List<QueueStats> getQueueStatsByAgency() throws SQLException {
         LOGGER.entry();
         List<QueueStats> result = new ArrayList<>();
 
-        try (Connection connection = globalDataSource.getConnection();
-             Statement stmt = connection.createStatement()) {
-            try (ResultSet resultSet = stmt.executeQuery(SELECT_QUEUE_COUNT_BY_AGENCY)) {
-                while (resultSet.next()) {
-                    final String text = resultSet.getString("text");
-                    final int count = resultSet.getInt("count");
-                    final String date = resultSet.getString("max");
-
-                    result.add(new QueueStats(text, count, date));
-                }
-            }
-
-            return result;
+        try {
+            return result = getQueueStats(SELECT_QUEUE_COUNT_BY_AGENCY);
         } finally {
             LOGGER.exit(result);
         }
     }
 
-    public List<QueueStats> getStatsQueueByError() throws SQLException {
+    public List<QueueStats> getQueueStatsByError() throws SQLException {
         LOGGER.entry();
+        List<QueueStats> result = new ArrayList<>();
+
+        try {
+            return result = getQueueStats(SELECT_QUEUE_COUNT_BY_ERROR);
+        } finally {
+            LOGGER.exit(result);
+        }
+    }
+
+    private List<QueueStats> getQueueStats(String queueQuery) throws SQLException {
+        LOGGER.entry(queueQuery);
         List<QueueStats> result = new ArrayList<>();
 
         try (Connection connection = globalDataSource.getConnection();
              Statement stmt = connection.createStatement()) {
-            try (ResultSet resultSet = stmt.executeQuery(SELECT_QUEUE_COUNT_BY_ERROR)) {
+            try (ResultSet resultSet = stmt.executeQuery(queueQuery)) {
                 while (resultSet.next()) {
                     final String text = resultSet.getString("text");
                     final int count = resultSet.getInt("count");
