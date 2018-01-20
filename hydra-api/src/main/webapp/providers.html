@@ -25,8 +25,7 @@
             constructor(props) {
                 super(props);
                 this.state = {
-                    mode: undefined,
-                    providerInfo: undefined
+                    providerInfo: null
                 };
                 this.getProviderInfo = this.getProviderInfo.bind(this);
                 this.drawProviders = this.drawProviders.bind(this);
@@ -34,13 +33,12 @@
 
             getProviderInfo() {
                 superagent.get('/api/queue/providerDetails').end((err, res) => {
-                    let response = res.body;
-
-                    if (response === null) {
+                    if (err) {
+                        alert("FEJL!\n\nDen opstod fejl under kald til /api/stats/queueByWorker:\n" + err)
+                    } else if (res.body === null) {
                         alert('FEJL!\n\nDer kom tomt svar tilbage fra /api/queue/providerInfo');
                     } else {
-
-                        this.setState({providerInfo: response.providers});
+                        this.setState({providerInfo: res.body.providers});
                     }
                 });
 
@@ -48,7 +46,7 @@
 
             drawProviders() {
                 console.log("drawProviders", this.state.providerInfo);
-                if (this.state.providerInfo === undefined) {
+                if (this.state.providerInfo === null) {
                     this.getProviderInfo();
                     return e('div', null, "Loading...");
                 } else {
