@@ -356,7 +356,7 @@ public class RawRepoConnector {
         }
     }
 
-    public List<QueueStats> getStatsQueueByWorker() throws SQLException {
+    public List<QueueStats> getQueueStatsByWorker() throws SQLException {
         LOGGER.entry();
         List<QueueStats> result = new ArrayList<>();
 
@@ -367,7 +367,7 @@ public class RawRepoConnector {
         }
     }
 
-    public List<QueueStats> getStatsQueueByAgency() throws SQLException {
+    public List<QueueStats> getQueueStatsByAgency() throws SQLException {
         LOGGER.entry();
         List<QueueStats> result = new ArrayList<>();
 
@@ -378,7 +378,7 @@ public class RawRepoConnector {
         }
     }
 
-    public List<QueueStats> getStatsQueueByError() throws SQLException {
+    public List<QueueStats> getQueueStatsByError() throws SQLException {
         LOGGER.entry();
         List<QueueStats> result = new ArrayList<>();
 
