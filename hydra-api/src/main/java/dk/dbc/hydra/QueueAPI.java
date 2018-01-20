@@ -129,7 +129,6 @@ public class QueueAPI {
                     agencySummary.put(agencyId, count);
                 }
 
-                LOGGER.debug("{} = {}", sessionId, queueJob);
                 this.jobCache.put(sessionId, queueJob);
 
                 agencySummary.forEach((key, value) -> response.getAgencyAnalysisList().add(new AgencyAnalysis(key, value)));
