@@ -251,7 +251,8 @@ public class RawRepoConnector {
 
             return result;
         } finally {
-            LOGGER.exit(result);
+            // Not logging result as it may be millions of RecordIds
+            LOGGER.exit();
         }
     }
 
