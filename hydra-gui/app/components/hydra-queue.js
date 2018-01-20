@@ -43,6 +43,7 @@ class HydraQueue extends React.Component {
 
         this.getQueueTypesOptions = this.getQueueTypesOptions.bind(this);
         this.getProvidersOptions = this.getProvidersOptions.bind(this);
+        this.getProvidersLink = this.getProvidersLink.bind(this);
 
         this.onChangeQueueType = this.onChangeQueueType.bind(this);
         this.onChangeProvider = this.onChangeProvider.bind(this);
@@ -225,11 +226,11 @@ class HydraQueue extends React.Component {
     }
 
     getProvidersOptions() {
-        superagent.get('/api/queue/providers').end((err, res) => {
+        superagent.get('/api/queue/providersNames').end((err, res) => {
             if (err) {
-                alert("FEJL!\n\nDen opstod fejl under kald til /api/queue/providers:\n" + err)
+                alert("FEJL!\n\nDen opstod fejl under kald til /api/queue/providerNames:\n" + err)
             } else if (res.body === null) {
-                alert('FEJL!\n\nDer kom tomt svar tilbage fra /api/queue/providers');
+                alert('FEJL!\n\nDer kom tomt svar tilbage fra /api/queue/providerNames');
             } else {
                 let providerNames = [];
 
@@ -239,6 +240,14 @@ class HydraQueue extends React.Component {
                 this.setState({providers: providerNames, selectedProvider: providerNames[0].key});
             }
         });
+    }
+
+    getProvidersLink() {
+        if (!this.state.isLoading) {
+            return <a href="providers.html" target="_blank">Forklaring</a>
+        } else {
+            return <p>Forklaring</p>
+        }
     }
 
     render() {
@@ -270,6 +279,7 @@ class HydraQueue extends React.Component {
                                     {this.state.providers}
                                 </select>
                             </div>
+                            {this.getProvidersLink()}
                         </div>
                         <div className='form-group'>
                             <label className='control-label col-sm-2'

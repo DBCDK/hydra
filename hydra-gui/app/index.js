@@ -5,9 +5,9 @@
 
 const React = require("react");
 const ReactDOM = require("react-dom");
-import HydraGUI from './components/hydra-main';
+import HydraMain from './components/hydra-main';
 
 ReactDOM.render(
-<HydraGUI/>,
+<HydraMain/>,
     document.getElementById('hydra-root')
 );

@@ -69,7 +69,7 @@ public class QueueAPITest {
 
         when(bean.rawrepo.getProviders()).thenReturn(providerList);
 
-        final Response response = bean.getProviders();
+        final Response response = bean.getProviderNames();
 
         assertThat("Response code OK", response.getStatus(), is(200));
         assertThat("Two providers", response.getEntity().toString(), is(
