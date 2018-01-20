@@ -54,8 +54,8 @@ public class RawRepoConnector {
                     "ORDER  BY agencyid";
 
     private static final String SELECT_QUEUE_COUNT_BY_WORKER = "SELECT worker AS text, COUNT(*), MAX(queued) FROM queue GROUP BY worker ORDER BY worker";
-    private static final String SELECT_QUEUE_COUNT_BY_AGENCY = "SELECT agencyid AS text, COUNT(*), MAX(queued)  FROM queue GROUP BY agencyid ORDER BY agencyid";
-    private static final String SELECT_QUEUE_COUNT_BY_ERROR = "SELECT error AS text, COUNT(*), MAX(queued)  FROM jobdiag GROUP BY error ORDER BY max(queued) DESC";
+    private static final String SELECT_QUEUE_COUNT_BY_AGENCY = "SELECT agencyid AS text, COUNT(*), MAX(queued) FROM queue GROUP BY agencyid ORDER BY agencyid";
+    private static final String SELECT_QUEUE_COUNT_BY_ERROR = "SELECT error AS text, COUNT(*), MAX(queued) FROM jobdiag WHERE queued > now() - INTERVAL '30 DAYS' GROUP BY error ORDER BY MAX(queued) DESC";
 
     @Resource(lookup = "jdbc/rawrepo")
     private DataSource globalDataSource;
