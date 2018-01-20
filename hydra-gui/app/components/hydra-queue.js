@@ -226,7 +226,7 @@ class HydraQueue extends React.Component {
     }
 
     getProvidersOptions() {
-        superagent.get('/api/queue/providersNames').end((err, res) => {
+        superagent.get('/api/queue/providerNames').end((err, res) => {
             if (err) {
                 alert("FEJL!\n\nDen opstod fejl under kald til /api/queue/providerNames:\n" + err)
             } else if (res.body === null) {
