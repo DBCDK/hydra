@@ -73,19 +73,18 @@ class HydraQueue extends React.Component {
             .send(data)
             .type('json')
             .set('Accept', 'application/json')
-            .then((res) => {
-                let response = res.body;
-
-                if (response === null) {
-                    alert('FEJL!\n\n' +
-                        'Der kom tomt svar tilbage');
-                } else if (response.validated === undefined) {
-                    alert('FEJL!\n\n' +
-                        'Der gik et eller andet galt, da svaret ikke indeholder de forventede attributter');
-                } else if (!response.validated) {
-                    alert('VALIDERING FEJLEDE!\n\n' +
-                        response.message);
+            .end((err, res) => {
+                if (err) {
+                    alert("FEJL!\n\nDen opstod fejl under kald til /api/queue/validate:\n" + err)
+                } else if (res.body === null) {
+                    alert('FEJL!\n\nDer kom tomt svar tilbage fra /api/queue/validate');
+                } else if (res.body.validated === undefined) {
+                    alert('FEJL!\n\nDer gik et eller andet galt, da svaret ikke indeholder de forventede attributter');
+                } else if (!res.body.validated) {
+                    alert('VALIDERING FEJLEDE!\n\n' + res.body.message);
                 } else {
+                    let response = res.body;
+
                     this.setState({
                         queueMode: MODE_VALIDATED,
                         queueAnalysis: response.agencyAnalysisList,
@@ -93,10 +92,6 @@ class HydraQueue extends React.Component {
                         sessionId: response.sessionId
                     });
                 }
-                this.setState({isLoading: false});
-            })
-            .catch((error) => {
-                alert('FEJL! ' + error);
                 this.setState({isLoading: false});
             });
         event.preventDefault();
@@ -127,21 +122,19 @@ class HydraQueue extends React.Component {
             }))
             .type('json')
             .set('Accept', 'application/json')
-            .then((res) => {
-                let response = res.body;
-
-                if (response === null) {
-                    alert('FEJL!\n\n' +
-                        'Der kom tomt svar tilbage');
-                } else if (response.validated === undefined) {
-                    alert('FEJL!\n\n' +
-                        'Der gik et eller andet galt, da svaret ikke indeholder de forventede attributter');
-                } else if (!response.validated) {
+            .end((err, res) => {
+                if (err) {
+                    alert("FEJL!\n\nDen opstod fejl under kald til /api/queue/process:\n" + err)
+                } else if (res.body === null) {
+                    alert('FEJL!\n\nDer kom tomt svar tilbage fra /api/queue/process');
+                } else if (res.body.validated === undefined) {
+                    alert('FEJL!\n\nDer gik et eller andet galt, da svaret ikke indeholder de forventede attributter');
+                } else if (!res.body.validated) {
                     this.setState({
                         queueMode: MODE_VALIDATED
                     });
                     alert('VALIDERING FEJLEDE!\n\n' +
-                        response.message);
+                        res.body.message);
                 } else {
                     if (chunkIndex === chunks) {
                         this.setState({
@@ -162,12 +155,6 @@ class HydraQueue extends React.Component {
                     }
                 }
                 this.setState({isLoading: false});
-            })
-            .catch((error) => {
-                alert('FEJL! ' + error);
-                this.setState({
-                    isLoading: false
-                });
             });
     }
 
@@ -239,13 +226,14 @@ class HydraQueue extends React.Component {
 
     getProvidersOptions() {
         superagent.get('/api/queue/providers').end((err, res) => {
-            let response = res.body;
-
-            if (response === null) {
+            if (err) {
+                alert("FEJL!\n\nDen opstod fejl under kald til /api/queue/providers:\n" + err)
+            } else if (res.body === null) {
                 alert('FEJL!\n\nDer kom tomt svar tilbage fra /api/queue/providers');
             } else {
                 let providerNames = [];
-                response.map(function (item) {
+
+                res.body.map(function (item) {
                     providerNames.push(<option key={item.name} value={item.name}>{item.name}</option>);
                 });
                 this.setState({providers: providerNames, selectedProvider: providerNames[0].key});
