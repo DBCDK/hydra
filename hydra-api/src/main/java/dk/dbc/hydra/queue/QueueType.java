@@ -96,17 +96,17 @@ public class QueueType {
 
     public static QueueType fromString(String key) {
         switch (key) {
-            case (FFU):
+            case FFU:
                 return ffu();
-            case (FBS_LOCAL):
+            case FBS_LOCAL:
                 return fbsRawrepo();
-            case (FBS_ENRICHMENT):
+            case FBS_ENRICHMENT:
                 return fbsRawrepoEnrichment();
-            case (FBS_HOLDINGS):
+            case FBS_HOLDINGS:
                 return fbsHoldings();
-            case (FBS_EVERYTHING):
+            case FBS_EVERYTHING:
                 return fbsEverything();
-            case (DBC_COMMON_ONLY):
+            case DBC_COMMON_ONLY:
                 return dbcCommon();
             default:
                 return null;
