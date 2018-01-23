@@ -19,10 +19,10 @@ class HydraStatistics extends React.Component {
         return (
             <div id='order-grid-row' className='row'>
                 <div id='order-grid-row-left' className='col-lg-6'>
-                    {<HydraStatisticsRecords/>}
+                    <HydraStatisticsRecords/>
                 </div>
                 <div id='order-grid-row-right' className='col-lg-6'>
-                    {<HydraStatisticsQueue/>}
+                    <HydraStatisticsQueue/>
                 </div>
             </div>
         )
