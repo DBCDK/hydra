@@ -32,13 +32,13 @@
             }
 
             getProviderInfo() {
-                superagent.get('/api/queue/providerDetails').end((err, res) => {
+                superagent.get('/api/queue/providers').end((err, res) => {
                     if (err) {
-                        alert("FEJL!\n\nDen opstod fejl under kald til /api/stats/queueByWorker:\n" + err)
+                        alert("FEJL!\n\nDen opstod fejl under kald til /api/queue/providers:\n" + err)
                     } else if (res.body === null) {
-                        alert('FEJL!\n\nDer kom tomt svar tilbage fra /api/queue/providerInfo');
+                        alert('FEJL!\n\nDer kom tomt svar tilbage fra /api/queue/providers');
                     } else {
-                        this.setState({providerInfo: res.body.providers});
+                        this.setState({providerInfo: res.body});
                     }
                 });
 

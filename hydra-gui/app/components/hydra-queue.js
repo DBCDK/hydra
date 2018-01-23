@@ -226,11 +226,11 @@ class HydraQueue extends React.Component {
     }
 
     getProvidersOptions() {
-        superagent.get('/api/queue/providerNames').end((err, res) => {
+        superagent.get('/api/queue/providers').end((err, res) => {
             if (err) {
-                alert("FEJL!\n\nDen opstod fejl under kald til /api/queue/providerNames:\n" + err)
+                alert("FEJL!\n\nDen opstod fejl under kald til /api/queue/providers:\n" + err)
             } else if (res.body === null) {
-                alert('FEJL!\n\nDer kom tomt svar tilbage fra /api/queue/providerNames');
+                alert('FEJL!\n\nDer kom tomt svar tilbage fra /api/queue/providers');
             } else {
                 let providerNames = [];
 
