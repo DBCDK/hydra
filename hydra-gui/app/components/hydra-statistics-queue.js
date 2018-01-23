@@ -37,7 +37,7 @@ class HydraStatisticsQueue extends React.Component {
         this.setState({loadingStatQueueByWorker: true});
         superagent.get('/api/stats/queueByWorker').end((err, res) => {
             if (err) {
-                alert("FEJL!\n\nDen opstod fejl under kald til /api/stats/queueByWorker:\n" + err)
+                alert("FEJL!\n\nDer opstod fejl under kald til /api/stats/queueByWorker:\n" + err)
             } else if (res.body === null) {
                 alert('FEJL!\n\nDer kom tomt svar tilbage fra api/stats/queueByWorker');
             } else {
@@ -53,7 +53,7 @@ class HydraStatisticsQueue extends React.Component {
         this.setState({loadingStatQueueByAgency: true});
         superagent.get('/api/stats/queueByAgency').end((err, res) => {
             if (err) {
-                alert("FEJL!\n\nDen opstod fejl under kald til /api/stats/queueByAgency:\n" + err)
+                alert("FEJL!\n\nDer opstod fejl under kald til /api/stats/queueByAgency:\n" + err)
             } else if (res.body === null) {
                 alert('FEJL!\n\nDer kom tomt svar tilbage fra api/stats/queueByAgency');
             } else {
@@ -69,7 +69,7 @@ class HydraStatisticsQueue extends React.Component {
         this.setState({loadingStatQueueByError: true});
         superagent.get('/api/stats/queueByError').end((err, res) => {
             if (err) {
-                alert("FEJL!\n\nDen opstod fejl under kald til /api/stats/queueByError:\n" + err)
+                alert("FEJL!\n\nDer opstod fejl under kald til /api/stats/queueByError:\n" + err)
             } else if (res.body === null) {
                 alert('FEJL!\n\nDer kom tomt svar tilbage fra api/stats/queueByError');
             } else {

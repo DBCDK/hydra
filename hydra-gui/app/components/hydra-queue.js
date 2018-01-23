@@ -76,7 +76,7 @@ class HydraQueue extends React.Component {
             .set('Accept', 'application/json')
             .end((err, res) => {
                 if (err) {
-                    alert("FEJL!\n\nDen opstod fejl under kald til /api/queue/validate:\n" + err)
+                    alert("FEJL!\n\nDer opstod fejl under kald til /api/queue/validate:\n" + err)
                 } else if (res.body === null) {
                     alert('FEJL!\n\nDer kom tomt svar tilbage fra /api/queue/validate');
                 } else if (res.body.validated === undefined) {
@@ -125,7 +125,7 @@ class HydraQueue extends React.Component {
             .set('Accept', 'application/json')
             .end((err, res) => {
                 if (err) {
-                    alert("FEJL!\n\nDen opstod fejl under kald til /api/queue/process:\n" + err)
+                    alert("FEJL!\n\nDer opstod fejl under kald til /api/queue/process:\n" + err)
                 } else if (res.body === null) {
                     alert('FEJL!\n\nDer kom tomt svar tilbage fra /api/queue/process');
                 } else if (res.body.validated === undefined) {
@@ -212,7 +212,7 @@ class HydraQueue extends React.Component {
     getQueueTypesOptions() {
         superagent.get("/api/queue/types").end((err, res) => {
             if (err) {
-                alert("FEJL!\n\nDen opstod fejl under kald til /api/queue/types:\n" + err)
+                alert("FEJL!\n\nDer opstod fejl under kald til /api/queue/types:\n" + err)
             } else if (res.body === null) {
                 alert('FEJL!\n\nDer kom tomt svar tilbage fra /api/queue/types');
             } else {
@@ -228,7 +228,7 @@ class HydraQueue extends React.Component {
     getProvidersOptions() {
         superagent.get('/api/queue/providers').end((err, res) => {
             if (err) {
-                alert("FEJL!\n\nDen opstod fejl under kald til /api/queue/providers:\n" + err)
+                alert("FEJL!\n\nDer opstod fejl under kald til /api/queue/providers:\n" + err)
             } else if (res.body === null) {
                 alert('FEJL!\n\nDer kom tomt svar tilbage fra /api/queue/providers');
             } else {
