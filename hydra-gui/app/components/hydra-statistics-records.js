@@ -28,7 +28,7 @@ class HydraStatisticsRecords extends React.Component {
         this.setState({loadingStatRecordByAgency: true});
         superagent.get('/api/stats/recordByAgency').end((err, res) => {
             if (err) {
-                alert("FEJL!\n\nDen opstod fejl under kald til /api/stats/recordByAgency:\n" + err)
+                alert("FEJL!\n\nDer opstod fejl under kald til /api/stats/recordByAgency:\n" + err)
             } else if (res.body === null) {
                 alert('FEJL!\n\nDer kom tomt svar tilbage fra api/stats/recordByAgency');
             } else {
