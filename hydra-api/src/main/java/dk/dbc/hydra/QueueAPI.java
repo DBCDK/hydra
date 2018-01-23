@@ -383,7 +383,7 @@ public class QueueAPI {
     @Stopwatch
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    @Path(ApplicationConstants.API_QUEUE_PROVIDER_NAMES)
+    @Path(ApplicationConstants.API_QUEUE_PROVIDERS)
     public Response getProviderNames() {
         LOGGER.entry();
         String res = "";
@@ -396,32 +396,6 @@ public class QueueAPI {
             return Response.ok(res, MediaType.APPLICATION_JSON).build();
         } catch (SQLException | JSONBException ex) {
             LOGGER.error("Exception during getProviderInfo", ex);
-            return Response.serverError().entity(ex.toString()).build();
-        } finally {
-            LOGGER.exit(res);
-        }
-    }
-
-
-    @Stopwatch
-    @GET
-    @Produces({MediaType.APPLICATION_JSON})
-    @Path(ApplicationConstants.API_QUEUE_PROVIDER_DETAILS)
-    public Response getProviderInfo() {
-        LOGGER.entry();
-        String res = "";
-
-        try {
-            List<QueueProvider> providers = rawrepo.getProviders();
-            LOGGER.info(providers.toString());
-
-            HashMap<String, List<QueueProvider>> resultObject = new HashMap<>();
-            resultObject.putIfAbsent("providers", providers);
-
-            res = jsonbContext.marshall(resultObject);
-            return Response.ok(res, MediaType.APPLICATION_JSON).build();
-        } catch (Exception ex) {
-            LOGGER.error("Unexpected exception:", ex);
             return Response.serverError().entity(ex.toString()).build();
         } finally {
             LOGGER.exit(res);
