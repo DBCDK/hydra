@@ -5,14 +5,14 @@
 
 package dk.dbc.hydra.dao;
 
-import dk.dbc.rawrepo.RecordId;
 import dk.dbc.hydra.queue.QueueException;
 import dk.dbc.hydra.queue.QueueProvider;
 import dk.dbc.hydra.queue.QueueWorker;
 import dk.dbc.hydra.stats.QueueStats;
-import dk.dbc.hydra.stats.RecordStats;
+import dk.dbc.hydra.stats.RecordSummary;
 import dk.dbc.hydra.timer.Stopwatch;
 import dk.dbc.hydra.timer.StopwatchInterceptor;
+import dk.dbc.rawrepo.RecordId;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 
@@ -26,6 +26,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -39,20 +40,7 @@ public class RawRepoConnector {
 
     private static final String SELECT_QUEUERULES_ALL = "SELECT * FROM queuerules";
     private static final String CALL_ENQUEUE_BULK = "SELECT * FROM enqueue_bulk(?, ?, ?, ?, ?)";
-    private static final String SELECT_RECORD_COUNT_BY_AGENCIES =
-            "SELECT * " +
-                    "FROM   (SELECT r.agencyid, " +
-                    "               Count(*) AS count_marcxchange " +
-                    "        FROM   records AS r " +
-                    "        WHERE  r.mimetype = 'text/marcxchange' " +
-                    "        GROUP  BY r.agencyid) a " +
-                    "       FULL JOIN (SELECT r.agencyid, " +
-                    "                         Count(*) AS count_enrichment " +
-                    "                  FROM   records AS r " +
-                    "                  WHERE  r.mimetype = 'text/enrichment+marcxchange' " +
-                    "                  GROUP  BY r.agencyid) b USING (agencyid) " +
-                    "ORDER  BY agencyid";
-
+    private static final String SELECT_RECORDS_SUMMARY_ALL = "SELECT * FROM records_summary ORDER BY agencyid";
     private static final String SELECT_QUEUE_COUNT_BY_WORKER = "SELECT worker AS text, COUNT(*), MAX(queued) FROM queue GROUP BY worker ORDER BY worker";
     private static final String SELECT_QUEUE_COUNT_BY_AGENCY = "SELECT agencyid AS text, COUNT(*), MAX(queued) FROM queue GROUP BY agencyid ORDER BY agencyid";
     private static final String SELECT_QUEUE_COUNT_BY_ERROR = "SELECT error AS text, COUNT(*), MAX(queued) FROM jobdiag WHERE queued > now() - INTERVAL '30 DAYS' GROUP BY error ORDER BY MAX(queued) DESC";
@@ -335,19 +323,21 @@ public class RawRepoConnector {
         }
     }
 
-    public List<RecordStats> getStatsRecordByAgency() throws SQLException {
+    public List<RecordSummary> getRecordsSummary() throws SQLException {
         LOGGER.entry();
-        List<RecordStats> result = new ArrayList<>();
+        List<RecordSummary> result = new ArrayList<>();
 
         try (Connection connection = globalDataSource.getConnection();
              Statement stmt = connection.createStatement()) {
-            try (ResultSet resultSet = stmt.executeQuery(SELECT_RECORD_COUNT_BY_AGENCIES)) {
+            try (ResultSet resultSet = stmt.executeQuery(SELECT_RECORDS_SUMMARY_ALL)) {
                 while (resultSet.next()) {
-                    final int agencyId = resultSet.getInt("agencyId");
-                    final int marcxCount = resultSet.getInt("count_marcxchange");
-                    final int enrichmentCount = resultSet.getInt("count_enrichment");
+                    final int agencyId = resultSet.getInt("agencyid");
+                    final int originalCount = resultSet.getInt("original_count");
+                    final int enrichmentCount = resultSet.getInt("enrichment_count");
+                    final int deletedCount = resultSet.getInt("deleted_count");
+                    final Timestamp ajourDate = resultSet.getTimestamp("ajour_date");
 
-                    result.add(new RecordStats(agencyId, marcxCount, enrichmentCount));
+                    result.add(new RecordSummary(agencyId, originalCount, enrichmentCount, deletedCount, ajourDate));
                 }
             }
 

@@ -10,7 +10,7 @@ import dk.dbc.commons.jsonb.JSONBException;
 import dk.dbc.hydra.common.ApplicationConstants;
 import dk.dbc.hydra.dao.RawRepoConnector;
 import dk.dbc.hydra.stats.QueueStats;
-import dk.dbc.hydra.stats.RecordStats;
+import dk.dbc.hydra.stats.RecordSummary;
 import dk.dbc.hydra.timer.Stopwatch;
 import dk.dbc.hydra.timer.StopwatchInterceptor;
 import org.slf4j.ext.XLogger;
@@ -41,19 +41,19 @@ public class StatisticsAPI {
     @Stopwatch
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    @Path(ApplicationConstants.API_STATS_RECORDS)
-    public Response getRecordStatsByAgency() {
+    @Path(ApplicationConstants.API_STATS_RECORDS_SUMMARY)
+    public Response getRecordsSummary() {
         LOGGER.entry();
         String res = "";
 
         try {
-            final List<RecordStats> providers = rawrepo.getStatsRecordByAgency();
+            final List<RecordSummary> providers = rawrepo.getRecordsSummary();
 
             res = jsonbContext.marshall(providers);
 
             return Response.ok(res, MediaType.APPLICATION_JSON).build();
         } catch (SQLException | JSONBException ex) {
-            LOGGER.error("Exception during getRecordStatsByAgency", ex);
+            LOGGER.error("Exception during getRecordsSummary", ex);
             return Response.serverError().build();
         } finally {
             LOGGER.exit(res);
