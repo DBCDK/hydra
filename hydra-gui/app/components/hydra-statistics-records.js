@@ -12,7 +12,7 @@ class HydraStatisticsRecords extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            statRecordByAgency: null,
+            recordsSummaryData: null,
 
             loadingRecordsSummary: false
         };
@@ -33,7 +33,7 @@ class HydraStatisticsRecords extends React.Component {
                 alert('FEJL!\n\nDer kom tomt svar tilbage fra api/stats/recordsSummary');
             } else {
                 this.setState({
-                    statRecordByAgency: res.body,
+                    recordsSummaryData: res.body,
                     loadingRecordsSummary: false
                 });
             }
@@ -44,18 +44,6 @@ class HydraStatisticsRecords extends React.Component {
         return (
             <div>
                 <h2>Postoversigt</h2>
-                <BootstrapTable
-                    data={this.state.statRecordByAgency}
-                    striped={true}
-                    options={{noDataText: 'Der blev ikke fundet nogen rækker'}}
-                    bordered={false}>
-                    <TableHeaderColumn dataField='agencyId' isKey>Biblioteksnummer</TableHeaderColumn>
-                    <TableHeaderColumn dataField='originalCount'>Antal originalposter</TableHeaderColumn>
-                    <TableHeaderColumn dataField='enrichmentCount'>Antal påhængsposter</TableHeaderColumn>
-                    <TableHeaderColumn dataField='deletedCount'>Antal sletteposter</TableHeaderColumn>
-                    <TableHeaderColumn dataField='ajourDate'>Ajourdato</TableHeaderColumn>
-                </BootstrapTable>
-                <br/>
                 <Button
                     onClick={this.getRecordsSummary}
                     type='submit'
@@ -63,6 +51,18 @@ class HydraStatisticsRecords extends React.Component {
                     disabled={this.state.loadingRecordsSummary}>
                     Genindlæs
                 </Button>
+                <br/>
+                <BootstrapTable
+                    data={this.state.recordsSummaryData}
+                    striped={true}
+                    options={{noDataText: 'Der blev ikke fundet nogen rækker'}}
+                    bordered={false}>
+                    <TableHeaderColumn dataField='agencyId' isKey dataSort>Bibliotek</TableHeaderColumn>
+                    <TableHeaderColumn dataField='originalCount' dataSort>Originalposter</TableHeaderColumn>
+                    <TableHeaderColumn dataField='enrichmentCount' dataSort>Påhængsposter</TableHeaderColumn>
+                    <TableHeaderColumn dataField='deletedCount' dataSort>Sletteposter</TableHeaderColumn>
+                    <TableHeaderColumn dataField='ajourDate' dataSort>Ajourdato</TableHeaderColumn>
+                </BootstrapTable>
             </div>
         );
     }
