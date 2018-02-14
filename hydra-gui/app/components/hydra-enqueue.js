@@ -4,7 +4,7 @@
  */
 
 import React from "react";
-import {Button} from "react-bootstrap";
+import {Button, Checkbox} from "react-bootstrap";
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import superagent from "superagent";
 
@@ -13,7 +13,7 @@ const MODE_VALIDATED = 10;
 const MODE_PROCESSING = 20;
 const MODE_PROCESSED = 30;
 
-class HydraQueue extends React.Component {
+class HydraEnqueue extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -284,13 +284,11 @@ class HydraQueue extends React.Component {
                         <div className='form-group'>
                             <label className='control-label col-sm-2'
                                    htmlFor='include-deleted-provider'>Inkluder slettede poster?</label>
-
                             <div className='col-sm-8'>
-                                <input type="checkbox"
-                                       defaultChecked={false}
-                                       id='include-deleted-provider'
-                                       onChange={this.onChangeIncludeDeleted}
-                                       className='form-control'/>
+                                <Checkbox onChange={this.onChangeIncludeDeleted}
+                                          checked={this.includeDeleted}
+                                          id='include-deleted-provider'
+                                          disabled={this.state.isLoading || this.state.queueMode >= MODE_VALIDATED}/>
                             </div>
                         </div>
                         <div className='form-group'>
@@ -302,7 +300,8 @@ class HydraQueue extends React.Component {
                                 <textarea className='form-control'
                                           id='agencies-to-queue'
                                           rows={15}
-                                          onChange={this.onChangeAgencies}/>
+                                          onChange={this.onChangeAgencies}
+                                          disabled={this.state.isLoading || this.state.queueMode >= MODE_VALIDATED}/>
                             </div>
                         </div>
                         <div className='form-group'>
@@ -389,4 +388,4 @@ class HydraQueue extends React.Component {
     }
 }
 
-export default HydraQueue;
+export default HydraEnqueue;
