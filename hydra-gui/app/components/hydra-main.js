@@ -5,8 +5,8 @@
 
 import React from "react";
 import {Tab, Tabs} from "react-bootstrap";
-import HydraQueueGUI from "./hydra-queue";
-import HydraStatisticsGUI from "./hydra-statistics";
+import HydraEnqueue from "./hydra-enqueue";
+import HydraStatistics from "./hydra-statistics";
 import superagent from "superagent";
 
 const TAB_QUEUE = 2;
@@ -36,13 +36,13 @@ class HydraMain extends React.Component {
 
     renderQueue() {
         if (this.state.key === TAB_QUEUE) {
-            return (<div><p/><HydraQueueGUI/></div>);
+            return (<div><p/><HydraEnqueue/></div>);
         }
     }
 
     renderStatistics() {
         if (this.state.key === TAB_STATISTICS) {
-            return (<div><p/><HydraStatisticsGUI/></div>);
+            return (<div><p/><HydraStatistics/></div>);
         }
     }
 
