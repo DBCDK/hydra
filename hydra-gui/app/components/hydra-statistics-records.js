@@ -14,27 +14,27 @@ class HydraStatisticsRecords extends React.Component {
         this.state = {
             statRecordByAgency: null,
 
-            loadingStatRecordByAgency: false
+            loadingRecordsSummary: false
         };
 
-        this.getStatRecordByAgency = this.getStatRecordByAgency.bind(this);
+        this.getRecordsSummary = this.getRecordsSummary.bind(this);
     }
 
     componentDidMount(props) {
-        this.getStatRecordByAgency();
+        this.getRecordsSummary();
     }
 
-    getStatRecordByAgency() {
-        this.setState({loadingStatRecordByAgency: true});
-        superagent.get('/api/stats/recordByAgency').end((err, res) => {
+    getRecordsSummary() {
+        this.setState({loadingRecordsSummary: true});
+        superagent.get('/api/stats/recordsSummary').end((err, res) => {
             if (err) {
-                alert("FEJL!\n\nDer opstod fejl under kald til /api/stats/recordByAgency:\n" + err)
+                alert("FEJL!\n\nDer opstod fejl under kald til /api/stats/recordsSummary:\n" + err)
             } else if (res.body === null) {
-                alert('FEJL!\n\nDer kom tomt svar tilbage fra api/stats/recordByAgency');
+                alert('FEJL!\n\nDer kom tomt svar tilbage fra api/stats/recordsSummary');
             } else {
                 this.setState({
                     statRecordByAgency: res.body,
-                    loadingStatRecordByAgency: false
+                    loadingRecordsSummary: false
                 });
             }
         });
@@ -50,15 +50,17 @@ class HydraStatisticsRecords extends React.Component {
                     options={{noDataText: 'Der blev ikke fundet nogen rækker'}}
                     bordered={false}>
                     <TableHeaderColumn dataField='agencyId' isKey>Biblioteksnummer</TableHeaderColumn>
-                    <TableHeaderColumn dataField='marcxCount'>Antal marcxchange poster</TableHeaderColumn>
-                    <TableHeaderColumn dataField='enrichmentCount'>Antal enrichment poster</TableHeaderColumn>
+                    <TableHeaderColumn dataField='originalCount'>Antal originalposter</TableHeaderColumn>
+                    <TableHeaderColumn dataField='enrichmentCount'>Antal påhængsposter</TableHeaderColumn>
+                    <TableHeaderColumn dataField='deletedCount'>Antal sletteposter</TableHeaderColumn>
+                    <TableHeaderColumn dataField='ajourDate'>Ajourdato</TableHeaderColumn>
                 </BootstrapTable>
                 <br/>
                 <Button
-                    onClick={this.getStatRecordByAgency}
+                    onClick={this.getRecordsSummary}
                     type='submit'
                     className='btn btn-success'
-                    disabled={this.state.loadingStatRecordByAgency}>
+                    disabled={this.state.loadingRecordsSummary}>
                     Genindlæs
                 </Button>
             </div>

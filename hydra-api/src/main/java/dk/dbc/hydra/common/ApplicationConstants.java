@@ -21,7 +21,7 @@ public class ApplicationConstants {
     public static final String API_HYDRA_INSTANCE_NAME = "instance";
 
     public static final String API_STATS = "/stats";
-    public static final String API_STATS_RECORDS = "/recordByAgency";
+    public static final String API_STATS_RECORDS_SUMMARY = "/recordsSummary";
     public static final String API_STATS_QUEUE_AGENCIES = "/queueByAgency";
     public static final String API_STATS_QUEUE_WORKERS = "/queueByWorker";
     public static final String API_STATS_QUEUE_ERRORS = "/queueByError";
