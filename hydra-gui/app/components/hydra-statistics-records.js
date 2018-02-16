@@ -8,6 +8,11 @@ import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import {Button} from 'react-bootstrap';
 import superagent from 'superagent';
 
+// This function puts '.' as thousand separator in the given cell value
+const integerFormatter = function (cell, row) {
+    return cell.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+};
+
 class HydraStatisticsRecords extends React.Component {
     constructor(props) {
         super(props);
@@ -48,7 +53,8 @@ class HydraStatisticsRecords extends React.Component {
                     onClick={this.getRecordsSummary}
                     type='submit'
                     className='btn btn-success'
-                    disabled={this.state.loadingRecordsSummary}>
+                    disabled={this.state.loadingRecordsSummary}
+                >
                     Genindlæs
                 </Button>
                 <br/>
@@ -56,12 +62,34 @@ class HydraStatisticsRecords extends React.Component {
                     data={this.state.recordsSummaryData}
                     striped={true}
                     options={{noDataText: 'Der blev ikke fundet nogen rækker'}}
-                    bordered={false}>
-                    <TableHeaderColumn dataField='agencyId' isKey dataSort>Bibliotek</TableHeaderColumn>
-                    <TableHeaderColumn dataField='originalCount' dataSort>Originalposter</TableHeaderColumn>
-                    <TableHeaderColumn dataField='enrichmentCount' dataSort>Påhængsposter</TableHeaderColumn>
-                    <TableHeaderColumn dataField='deletedCount' dataSort>Sletteposter</TableHeaderColumn>
-                    <TableHeaderColumn dataField='ajourDate' dataSort>Ajourdato</TableHeaderColumn>
+                    bordered={false}
+                    condensed={true}>
+                    <TableHeaderColumn
+                        dataField='agencyId'
+                        isKey
+                        dataSort
+                        data
+                        filter={{
+                            type: 'RegexFilter',
+                            placeholder: 'Indtast biblioteksnummer'
+                        }}
+                        dataAlign='right'>Bibliotek
+                    </TableHeaderColumn>
+                    <TableHeaderColumn dataField='originalCount'
+                                       dataSort
+                                       dataAlign='right'
+                                       dataFormat={integerFormatter}>Originalposter</TableHeaderColumn>
+                    <TableHeaderColumn dataField='enrichmentCount'
+                                       dataSort
+                                       dataAlign='right'
+                                       dataFormat={integerFormatter}>Påhængsposter</TableHeaderColumn>
+                    <TableHeaderColumn dataField='deletedCount'
+                                       dataSort
+                                       dataAlign='right'
+                                       dataFormat={integerFormatter}>Sletteposter</TableHeaderColumn>
+                    <TableHeaderColumn dataField='ajourDate'
+                                       dataSort
+                                       dataAlign='right'>Ajourdato</TableHeaderColumn>
                 </BootstrapTable>
             </div>
         );

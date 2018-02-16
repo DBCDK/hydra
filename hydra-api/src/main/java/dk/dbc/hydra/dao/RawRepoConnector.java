@@ -27,11 +27,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TimeZone;
 
 @Interceptors(StopwatchInterceptor.class)
 @Stateless
@@ -326,6 +328,8 @@ public class RawRepoConnector {
     public List<RecordSummary> getRecordsSummary() throws SQLException {
         LOGGER.entry();
         List<RecordSummary> result = new ArrayList<>();
+        final SimpleDateFormat danishDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        danishDateFormat.setTimeZone(TimeZone.getTimeZone("Europe/Copenhagen"));
 
         try (Connection connection = globalDataSource.getConnection();
              Statement stmt = connection.createStatement()) {
@@ -337,7 +341,11 @@ public class RawRepoConnector {
                     final int deletedCount = resultSet.getInt("deleted_count");
                     final Timestamp ajourDate = resultSet.getTimestamp("ajour_date");
 
-                    result.add(new RecordSummary(agencyId, originalCount, enrichmentCount, deletedCount, ajourDate));
+                    result.add(new RecordSummary(agencyId,
+                            originalCount,
+                            enrichmentCount,
+                            deletedCount,
+                            danishDateFormat.format(ajourDate)));
                 }
             }
 
