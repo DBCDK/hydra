@@ -5,9 +5,6 @@
 
 package dk.dbc.hydra.stats;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 public class RecordSummary {
 
     private int agencyId;
@@ -16,15 +13,12 @@ public class RecordSummary {
     private int deletedCount;
     private String ajourDate;
 
-    public RecordSummary() {
-    }
-
-    public RecordSummary(int agencyId, int originalCount, int enrichmentCount, int deletedCount, Date ajourDate) {
+    public RecordSummary(int agencyId, int originalCount, int enrichmentCount, int deletedCount, String ajourDate) {
         this.agencyId = agencyId;
         this.originalCount = originalCount;
         this.enrichmentCount = enrichmentCount;
         this.deletedCount = deletedCount;
-        this.ajourDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(ajourDate);
+        this.ajourDate = ajourDate;
     }
 
     public int getAgencyId() {
@@ -54,7 +48,7 @@ public class RecordSummary {
                 ", originalCount=" + originalCount +
                 ", enrichmentCount=" + enrichmentCount +
                 ", deletedCount=" + deletedCount +
-                ", ajourDate=" + ajourDate +
+                ", ajourDate='" + ajourDate + '\'' +
                 '}';
     }
 }
