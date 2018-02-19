@@ -8,9 +8,26 @@ import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import {Button} from 'react-bootstrap';
 import superagent from 'superagent';
 
-// This function puts '.' as thousand separator in the given cell value
 const integerFormatter = function (cell, row) {
-    return cell.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    let intValue = parseInt(cell);
+
+    return intValue.toLocaleString();
+};
+
+const dateFormatter = function (cell, row) {
+    let dateValue = new Date(cell);
+
+    // Used for making date and time segments two chars long.
+    let leftPad2 = function (val) {
+        return ("00" + val).slice(-2)
+    };
+
+    return dateValue.getFullYear() +
+        '-' + leftPad2(dateValue.getMonth() + 1) +
+        '-' + leftPad2(dateValue.getDate()) +
+        ' ' + leftPad2(dateValue.getHours()) +
+        ':' + leftPad2(dateValue.getMinutes()) +
+        ':' + leftPad2(dateValue.getSeconds());
 };
 
 class HydraStatisticsRecords extends React.Component {
@@ -53,10 +70,7 @@ class HydraStatisticsRecords extends React.Component {
                     onClick={this.getRecordsSummary}
                     type='submit'
                     className='btn btn-success'
-                    disabled={this.state.loadingRecordsSummary}
-                >
-                    Genindlæs
-                </Button>
+                    disabled={this.state.loadingRecordsSummary}>Genindlæs</Button>
                 <br/>
                 <BootstrapTable
                     data={this.state.recordsSummaryData}
@@ -73,8 +87,7 @@ class HydraStatisticsRecords extends React.Component {
                             type: 'RegexFilter',
                             placeholder: 'Indtast biblioteksnummer'
                         }}
-                        dataAlign='right'>Bibliotek
-                    </TableHeaderColumn>
+                        dataAlign='right'>Bibliotek</TableHeaderColumn>
                     <TableHeaderColumn dataField='originalCount'
                                        dataSort
                                        dataAlign='right'
@@ -89,7 +102,8 @@ class HydraStatisticsRecords extends React.Component {
                                        dataFormat={integerFormatter}>Sletteposter</TableHeaderColumn>
                     <TableHeaderColumn dataField='ajourDate'
                                        dataSort
-                                       dataAlign='right'>Ajourdato</TableHeaderColumn>
+                                       dataAlign='right'
+                                       dataFormat={dateFormatter}>Ajourdato</TableHeaderColumn>
                 </BootstrapTable>
             </div>
         );
