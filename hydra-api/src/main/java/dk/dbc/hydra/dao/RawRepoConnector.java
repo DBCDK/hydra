@@ -328,8 +328,6 @@ public class RawRepoConnector {
     public List<RecordSummary> getRecordsSummary() throws SQLException {
         LOGGER.entry();
         List<RecordSummary> result = new ArrayList<>();
-        final SimpleDateFormat danishDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        danishDateFormat.setTimeZone(TimeZone.getTimeZone("Europe/Copenhagen"));
 
         try (Connection connection = globalDataSource.getConnection();
              Statement stmt = connection.createStatement()) {
@@ -345,7 +343,7 @@ public class RawRepoConnector {
                             originalCount,
                             enrichmentCount,
                             deletedCount,
-                            danishDateFormat.format(ajourDate)));
+                            ajourDate));
                 }
             }
 

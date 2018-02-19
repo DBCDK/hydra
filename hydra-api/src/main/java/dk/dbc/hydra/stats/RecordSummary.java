@@ -5,15 +5,17 @@
 
 package dk.dbc.hydra.stats;
 
+import java.util.Date;
+
 public class RecordSummary {
 
     private int agencyId;
     private int originalCount;
     private int enrichmentCount;
     private int deletedCount;
-    private String ajourDate;
+    private Date ajourDate;
 
-    public RecordSummary(int agencyId, int originalCount, int enrichmentCount, int deletedCount, String ajourDate) {
+    public RecordSummary(int agencyId, int originalCount, int enrichmentCount, int deletedCount, Date ajourDate) {
         this.agencyId = agencyId;
         this.originalCount = originalCount;
         this.enrichmentCount = enrichmentCount;
@@ -37,7 +39,7 @@ public class RecordSummary {
         return deletedCount;
     }
 
-    public String getAjourDate() {
+    public Date getAjourDate() {
         return ajourDate;
     }
 
@@ -48,7 +50,7 @@ public class RecordSummary {
                 ", originalCount=" + originalCount +
                 ", enrichmentCount=" + enrichmentCount +
                 ", deletedCount=" + deletedCount +
-                ", ajourDate='" + ajourDate + '\'' +
+                ", ajourDate=" + ajourDate +
                 '}';
     }
 }
