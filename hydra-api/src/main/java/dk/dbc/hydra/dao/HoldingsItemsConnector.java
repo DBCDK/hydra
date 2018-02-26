@@ -7,9 +7,9 @@ package dk.dbc.hydra.dao;
 
 import dk.dbc.holdingsitems.HoldingsItemsDAO;
 import dk.dbc.holdingsitems.HoldingsItemsException;
-import dk.dbc.rawrepo.RecordId;
 import dk.dbc.hydra.timer.Stopwatch;
 import dk.dbc.hydra.timer.StopwatchInterceptor;
+import dk.dbc.rawrepo.RecordId;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 

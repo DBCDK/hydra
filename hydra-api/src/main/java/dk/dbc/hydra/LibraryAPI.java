@@ -7,11 +7,11 @@ package dk.dbc.hydra;
 
 import dk.dbc.commons.jsonb.JSONBContext;
 import dk.dbc.commons.jsonb.JSONBException;
-import dk.dbc.openagency.client.OpenAgencyException;
 import dk.dbc.hydra.common.ApplicationConstants;
 import dk.dbc.hydra.dao.OpenAgencyConnector;
 import dk.dbc.hydra.timer.Stopwatch;
 import dk.dbc.hydra.timer.StopwatchInterceptor;
+import dk.dbc.openagency.client.OpenAgencyException;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 

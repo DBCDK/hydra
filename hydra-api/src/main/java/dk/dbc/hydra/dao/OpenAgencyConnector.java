@@ -5,10 +5,10 @@
 
 package dk.dbc.hydra.dao;
 
-import dk.dbc.openagency.client.OpenAgencyException;
-import dk.dbc.openagency.client.OpenAgencyServiceFromURL;
 import dk.dbc.hydra.common.ApplicationConstants;
 import dk.dbc.hydra.common.EnvironmentVariables;
+import dk.dbc.openagency.client.OpenAgencyException;
+import dk.dbc.openagency.client.OpenAgencyServiceFromURL;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 import org.slf4j.ext.XLogger;
