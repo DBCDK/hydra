@@ -37,7 +37,7 @@ public class HoldingsItemsConnector {
 
     @PostConstruct
     public void postConstruct() {
-        LOGGER.debug("HoldingsItemsConnector.postConstruct()");
+        LOGGER.entry();
 
         if (!healthCheck()) {
             throw new RuntimeException("Unable to connection to Holdings Items"); // Can't throw checked exceptions from postConstruct
