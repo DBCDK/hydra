@@ -42,13 +42,11 @@ pipeline {
                     def name = "hydra-service"
                     def version = env.BUILD_NUMBER
 
-                    // Apparently the 'master' git branch is called 'trunk' in a Jenkins pipeline build
                     def isMasterBranch = env.BRANCH_NAME ==~ /master|trunk/
 
                     if (!isMasterBranch) {
-                        def branchSplit = env.BRANCH_NAME.split('/')
-                        def gitBranchName = branchSplit[1]
-                        version = gitBranchName + '-' + env.BUILD_NUMBER
+                        echo env.BRANCH_NAME
+                        version = gitBranchName + '-' + env.BRANCH_NAME
                     }
 
                     def image = docker.build("${repo}/${name}:${version}")
