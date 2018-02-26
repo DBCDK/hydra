@@ -6,7 +6,6 @@
 package dk.dbc.hydra;
 
 import dk.dbc.hydra.common.ApplicationConstants;
-import dk.dbc.hydra.timer.Stopwatch;
 import dk.dbc.hydra.timer.StopwatchInterceptor;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
@@ -27,7 +26,6 @@ import javax.ws.rs.core.Response;
 public class HydraAPI {
     private static final XLogger LOGGER = XLoggerFactory.getXLogger(HydraAPI.class);
 
-    @Stopwatch
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     @Path(ApplicationConstants.API_HYDRA_STATUS)
@@ -35,11 +33,11 @@ public class HydraAPI {
         return Response.ok(MediaType.APPLICATION_JSON).build();
     }
 
-    @Stopwatch
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     @Path(ApplicationConstants.API_HYDRA_INSTANCE_NAME)
     public Response getInstanceName() {
+        LOGGER.entry();
         String res = "";
         try {
             JsonObjectBuilder jsonObject = Json.createObjectBuilder();

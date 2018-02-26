@@ -52,7 +52,7 @@ public class RawRepoConnector {
 
     @PostConstruct
     public void postConstruct() {
-        LOGGER.debug("RawRepoConnector.postConstruct()");
+        LOGGER.entry();
 
         if (!healthCheck()) {
             throw new RuntimeException("Unable to connect to RawRepo"); // Can't throw checked exceptions from postConstruct
