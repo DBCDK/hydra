@@ -61,7 +61,7 @@ public class QueueAPI {
 
     private static final String MESSAGE_FAIL_NO_RECORDS = "Der blev ikke fundet nogen poster, så intet kan lægges på kø";
     private static final String MESSAGE_FAIL_INVALID_AGENCY_FORMAT = "Værdien '%s' har ikke et gyldigt format for et biblioteksnummer";
-    private static final String MESSAGE_FAIL_INVAILD_AGENCY_ID = "Biblioteksnummeret '%s' tilhører ikke biblioteksgruppen %s";
+    private static final String MESSAGE_FAIL_INVAILD_AGENCY_ID = "Biblioteksnummeret '%s' tilhører ikke en af biblioteksgrupperne %s";
     private static final String MESSAGE_FAIL_QUEUETYPE_NULL = "Der skal angives en køtype";
     private static final String MESSAGE_FAIL_QUEUETYPE = "Køtypen '%s' kunne ikke valideres";
     private static final String MESSAGE_FAIL_PROVIDER_NULL = "Der skal angives en provider";
@@ -324,7 +324,11 @@ public class QueueAPI {
                 agencyString = agencyString.replace(",,", ",");
             }
             final List<String> agencies = Arrays.asList(agencyString.split(","));
-            final Set<String> allowedAgencies = openAgency.getLibrariesByCatalogingTemplateSet(queueType.getCatalogingTemplateSet());
+
+            final Set<String> allowedAgencies = new HashSet<>();
+            for (String catalogingTemplateSet : queueType.getCatalogingTemplateSets()) {
+                allowedAgencies.addAll(openAgency.getLibrariesByCatalogingTemplateSet(catalogingTemplateSet));
+            }
 
             agencies.forEach(s -> s = s.trim());
 
@@ -341,7 +345,7 @@ public class QueueAPI {
                     throw new QueueException(String.format(MESSAGE_FAIL_INVALID_AGENCY_FORMAT, agency));
                 }
                 if (!allowedAgencies.contains(agency)) {
-                    throw new QueueException(String.format(MESSAGE_FAIL_INVAILD_AGENCY_ID, agency, queueType.getCatalogingTemplateSet()));
+                    throw new QueueException(String.format(MESSAGE_FAIL_INVAILD_AGENCY_ID, agency, queueType.getCatalogingTemplateSets()));
                 }
                 agencyList.add(Integer.parseInt(agency));
             }

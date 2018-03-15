@@ -280,7 +280,7 @@ public class QueueAPITest {
                 QueueValidateResponse.class);
 
         assertThat("Not validated", queueValidateResponse.isValidated(), is(false));
-        assertThat("Invalid agency - first element", queueValidateResponse.getMessage(), is("Biblioteksnummeret '123456' tilhører ikke biblioteksgruppen ffu"));
+        assertThat("Invalid agency - first element", queueValidateResponse.getMessage(), is("Biblioteksnummeret '123456' tilhører ikke en af biblioteksgrupperne [ffu, lokbib]"));
     }
 
     @Test
@@ -305,7 +305,7 @@ public class QueueAPITest {
                 QueueValidateResponse.class);
 
         assertThat("Not validated", queueValidateResponse.isValidated(), is(false));
-        assertThat("Invalid agency - second element", queueValidateResponse.getMessage(), is("Biblioteksnummeret '654321' tilhører ikke biblioteksgruppen ffu"));
+        assertThat("Invalid agency - second element", queueValidateResponse.getMessage(), is("Biblioteksnummeret '654321' tilhører ikke en af biblioteksgrupperne [ffu, lokbib]"));
     }
 
     @Test
@@ -471,8 +471,8 @@ public class QueueAPITest {
         validateRequest.setAgencyText("111111\n");
         validateRequest.setIncludeDeleted(false);
 
-        final Set<String> agenciesStringSet = new HashSet<>();
-        agenciesStringSet.add("111111");
+        final Set<String> agenciesStringSets = new HashSet<>();
+        agenciesStringSets.add("111111");
 
         final Set<Integer> agenciesIntegerSet = new HashSet<>();
         agenciesIntegerSet.add(111111);
@@ -482,7 +482,7 @@ public class QueueAPITest {
 
         when(bean.rawrepo.getProviders()).thenReturn(Arrays.asList(new QueueProvider("the-real-provider")));
         when(bean.rawrepo.getRecordsForAgencies(agenciesIntegerSet, false)).thenReturn(recordIdSet);
-        when(bean.openAgency.getLibrariesByCatalogingTemplateSet("ffu")).thenReturn(agenciesStringSet);
+        when(bean.openAgency.getLibrariesByCatalogingTemplateSet("ffu")).thenReturn(agenciesStringSets);
         final Response validateResponse = bean.validate(jsonbContext.marshall(validateRequest));
 
         assertThat("Response code 200 - validate", validateResponse.getStatus(), is(200));
