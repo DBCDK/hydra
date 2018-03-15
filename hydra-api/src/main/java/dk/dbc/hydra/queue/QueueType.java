@@ -5,11 +5,14 @@
 
 package dk.dbc.hydra.queue;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class QueueType {
 
     private String key;
     private String description;
-    private String catalogingTemplateSet;
+    private List<String> catalogingTemplateSets;
     private boolean changed;
     private boolean leaf;
 
@@ -37,7 +40,7 @@ public class QueueType {
     */
     public static QueueType ffu() {
         QueueType queueType = new QueueType(FFU, "FFU - RR Lokalposter");
-        queueType.catalogingTemplateSet = "ffu";
+        queueType.catalogingTemplateSets = Arrays.asList("ffu", "lokbib");
         queueType.changed = true;
         queueType.leaf = true;
 
@@ -46,8 +49,7 @@ public class QueueType {
 
     public static QueueType fbsRawrepo() {
         QueueType queueType =  new QueueType(FBS_LOCAL, "FBS - RR lokalposter + RR påhængsposter");
-
-        queueType.catalogingTemplateSet = "fbs";
+        queueType.catalogingTemplateSets = Arrays.asList("fbs", "fbslokal", "ph");
         queueType.changed = true;
         queueType.leaf = true;
 
@@ -56,8 +58,7 @@ public class QueueType {
 
     public static QueueType fbsRawrepoEnrichment() {
         QueueType queueType =  new QueueType(FBS_ENRICHMENT, "FBS - RR Påhængsposter");
-
-        queueType.catalogingTemplateSet = "fbs";
+        queueType.catalogingTemplateSets = Arrays.asList("fbs", "fbslokal", "ph");
         queueType.changed = true;
         queueType.leaf = true;
 
@@ -66,8 +67,7 @@ public class QueueType {
 
     public static QueueType fbsHoldings() {
         QueueType queueType =  new QueueType(FBS_HOLDINGS, "FBS - Beholdning");
-
-        queueType.catalogingTemplateSet = "fbs";
+        queueType.catalogingTemplateSets = Arrays.asList("fbs", "fbslokal", "ph");
         queueType.changed = true;
         queueType.leaf = true;
 
@@ -76,8 +76,7 @@ public class QueueType {
 
     public static QueueType fbsEverything() {
         QueueType queueType =  new QueueType(FBS_EVERYTHING, "FBS - Beholdning + RR lokalposter + RR påhængsposter");
-
-        queueType.catalogingTemplateSet = "fbs";
+        queueType.catalogingTemplateSets = Arrays.asList("fbs", "fbslokal", "ph");
         queueType.changed = true;
         queueType.leaf = true;
 
@@ -86,8 +85,7 @@ public class QueueType {
 
     public static QueueType dbcCommon() {
         QueueType queueType =  new QueueType(DBC_COMMON_ONLY, "DBC - Fællesposter til RR solr (uden FBS påhæng)");
-
-        queueType.catalogingTemplateSet = "dbc";
+        queueType.catalogingTemplateSets = Arrays.asList("dbc");
         queueType.changed = true;
         queueType.leaf = false;
 
@@ -121,8 +119,8 @@ public class QueueType {
         return description;
     }
 
-    public String getCatalogingTemplateSet() {
-        return catalogingTemplateSet;
+    public List<String> getCatalogingTemplateSets() {
+        return catalogingTemplateSets;
     }
 
     public boolean isChanged() {
