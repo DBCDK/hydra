@@ -187,6 +187,10 @@ public class QueueAPI {
                 // the FBS records to the list as well
                 recordMap.addAll(fbsRecordIds);
                 break;
+            case QueueType.IMS:
+                recordMap = holdingsItemsConnector.getHoldingsRecords(agencyList);
+                recordMap.addAll(rawrepo.getRecordsForAgencies(agencyList, includeDeleted));
+                break;
         }
 
         queueJob.setRecordIdList(recordMap);
@@ -421,6 +425,7 @@ public class QueueAPI {
             queueTypes.add(QueueType.fbsRawrepoEnrichment());
             queueTypes.add(QueueType.fbsHoldings());
             queueTypes.add(QueueType.fbsEverything());
+            queueTypes.add(QueueType.ims());
 
             // Hack to only enable DBC queue type on basismig environment
             if (variables.getenv(ApplicationConstants.INSTANCE_NAME).toLowerCase().contains("basismig")) {

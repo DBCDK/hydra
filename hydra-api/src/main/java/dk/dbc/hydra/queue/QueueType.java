@@ -22,6 +22,7 @@ public class QueueType {
     public static final String FBS_HOLDINGS = "fbs_holdings";
     public static final String FBS_EVERYTHING = "fbs_everything";
     public static final String DBC_COMMON_ONLY = "dbc_common_only";
+    public static final String IMS = "ims";
 
     private QueueType(String key, String description) {
         this.key = key;
@@ -92,6 +93,15 @@ public class QueueType {
         return queueType;
     }
 
+    public static QueueType ims() {
+        QueueType queueType =  new QueueType(IMS, "IMS - Beholdning + lokalposter + påhængsposter, kun med IMS som agency");
+        queueType.catalogingTemplateSets = Arrays.asList("fbs");
+        queueType.changed = true;
+        queueType.leaf = false;
+
+        return queueType;
+    }
+
     public static QueueType fromString(String key) {
         switch (key) {
             case FFU:
@@ -106,6 +116,8 @@ public class QueueType {
                 return fbsEverything();
             case DBC_COMMON_ONLY:
                 return dbcCommon();
+            case IMS:
+                return ims();
             default:
                 return null;
         }
