@@ -45,7 +45,7 @@ pipeline {
                     def isMasterBranch = env.BRANCH_NAME ==~ /master|trunk/
 
                     if (!isMasterBranch) {
-                        version = env.BUILD_NUMBER + '-' + env.BUILD_NUMBER
+                        version = env.BRANCH_NAME + '-' + env.BUILD_NUMBER
                     }
 
                     def image = docker.build("${repo}/${name}:${version}")
