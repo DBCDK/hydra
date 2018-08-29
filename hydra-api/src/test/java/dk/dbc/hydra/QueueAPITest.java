@@ -91,6 +91,7 @@ public class QueueAPITest {
         expected.add(QueueType.fbsRawrepoEnrichment());
         expected.add(QueueType.fbsHoldings());
         expected.add(QueueType.fbsEverything());
+        expected.add(QueueType.ims());
 
         final String expectedJSON = jsonbContext.marshall(expected);
 
@@ -112,6 +113,7 @@ public class QueueAPITest {
         expected.add(QueueType.fbsRawrepoEnrichment());
         expected.add(QueueType.fbsHoldings());
         expected.add(QueueType.fbsEverything());
+        expected.add(QueueType.ims());
         expected.add(QueueType.dbcCommon());
 
         final String expectedJSON = jsonbContext.marshall(expected);
