@@ -97,7 +97,7 @@ public class QueueType {
         QueueType queueType =  new QueueType(IMS, "IMS - Beholdning + lokalposter + påhængsposter, kun med IMS som agency");
         queueType.catalogingTemplateSets = Arrays.asList("fbs");
         queueType.changed = true;
-        queueType.leaf = false;
+        queueType.leaf = true;
 
         return queueType;
     }
