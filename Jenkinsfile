@@ -29,10 +29,10 @@ pipeline {
         }
         stage("publish pmd results") {
             steps {
-                step([$class: 'hudson.plugins.pmd.PmdPublisher',
-                    pattern: '**/target/pmd.xml',
-                    unstableTotalAll: "0",
-                    failedTotalAll: "0"])
+                step([$class          : 'hudson.plugins.pmd.PmdPublisher',
+                      pattern         : '**/target/pmd.xml',
+                      unstableTotalAll: "0",
+                      failedTotalAll  : "0"])
             }
         }
         stage("docker build") {
@@ -40,21 +40,13 @@ pipeline {
                 script {
                     def repo = "docker-io.dbc.dk"
                     def name = "hydra-service"
-                    def version = env.BUILD_NUMBER
-
-                    def isMasterBranch = env.BRANCH_NAME ==~ /master|trunk/
-
-                    if (!isMasterBranch) {
-                        version = env.BRANCH_NAME + '-' + env.BUILD_NUMBER
-                    }
-
+                    def version = env.BRANCH_NAME + '-' + env.BUILD_NUMBER
                     def image = docker.build("${repo}/${name}:${version}")
 
                     image.push()
 
-                    if (isMasterBranch) {
-                        echo 'Pushing build to latest'
-                        image.push('latest')
+                    if (env.BRANCH_NAME ==~ /master|trunk/) {
+                        image.push("DIT-${env.BUILD_NUMBER}")
                     }
                 }
             }
