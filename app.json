@@ -1,0 +1,11 @@
+{
+  "appName": "hydra",
+  "jdbc": {
+    "jdbc/rawrepo": {
+      "url": "${RAWREPO_URL}"
+    },
+    "jdbc/holdingsitems": {
+      "url": "${HOLDINGS_ITEMS_URL}"
+    }
+  }
+}
