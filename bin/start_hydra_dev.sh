@@ -58,11 +58,11 @@ hi_user=`egrep holdings.jdbc.conn.user ${HOME}/.ocb-tools/testrun.properties | t
 hi_pass=`egrep holdings.jdbc.conn.passwd ${HOME}/.ocb-tools/testrun.properties | tr -d " " | cut -d"=" -f2`
 echo "Starting container"
 container_id=`docker run -it ${detached} -p ${port}:8080 \
-        -e RAWREPO_URL="${rr_user} ${rr_user}:${rr_pass}@${rr_conn}" \
+        -e RAWREPO_URL="${rr_user}:${rr_pass}@${rr_conn}" \
         -e HOLDINGS_ITEMS_URL="${hi_user} ${hi_user}:${hi_pass}@${hi_conn}" \
 		-e OPENAGENCY_URL="http://openagency.addi.dk/test_2.33/" \
 		-e INSTANCE_NAME="${USER}_dev_basismig" \
-		-e ADD_JVM_ARGS="-Xms2g" \
+		-e JAVA_MAX_HEAP_SIZE="2G" \
 		 ${docker_image}:${version}`
 cc=$?
 if [ ${cc} -ne 0 ]
