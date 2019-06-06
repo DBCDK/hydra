@@ -8,7 +8,8 @@
     "superagent": "^3.8.2",
     "popper": "^1.0.1",
     "react-bootstrap": "^0.32.0",
-    "react-bootstrap-table": "^4.3.1"
+    "react-bootstrap-table": "^4.3.1",
+    "js-yaml": "^3.13.1"
   },
   "license": "GPL-3.0",
   "scripts": {
