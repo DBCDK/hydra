@@ -16,6 +16,9 @@ pipeline {
     options {
         timestamps()
     }
+    environment {
+        GITLAB_PRIVATE_TOKEN = credentials("metascrum-gitlab-api-token")
+    }
     stages {
         stage("clear workspace") {
             steps {
@@ -49,6 +52,29 @@ pipeline {
 
                     if (env.BRANCH_NAME ==~ /master|trunk/) {
                         image.push("DIT-${env.BUILD_NUMBER}")
+                    }
+                }
+            }
+        }
+        stage("Update DIT") {
+            agent {
+                docker {
+                    label workerNode
+                    image "docker.dbc.dk/build-env:latest"
+                    alwaysPull true
+                }
+            }
+            when {
+                expression {
+                    (currentBuild.result == null || currentBuild.result == 'SUCCESS') && env.BRANCH_NAME == 'master'
+                }
+            }
+            steps {
+                script {
+                    dir("deploy") {
+                        sh """
+                            set-new-version services/rawrepo-hydra.yml ${env.GITLAB_PRIVATE_TOKEN} metascrum/dit-gitops-secrets DIT-${env.BUILD_NUMBER} -b master
+						"""
                     }
                 }
             }
