@@ -24,7 +24,6 @@ public class ApplicationConstants {
     public static final String API_STATS_RECORDS_SUMMARY = "/recordsSummary";
     public static final String API_STATS_QUEUE_AGENCIES = "/queueByAgency";
     public static final String API_STATS_QUEUE_WORKERS = "/queueByWorker";
-    public static final String API_STATS_QUEUE_ERRORS = "/queueByError";
 
     public static final String API_ERRORS = "/errors";
     public static final String API_ERRORS_WORKERS = "/byWorker";

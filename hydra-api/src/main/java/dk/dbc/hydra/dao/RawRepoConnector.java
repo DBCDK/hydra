@@ -45,7 +45,6 @@ public class RawRepoConnector {
     private static final String SELECT_RECORDS_SUMMARY_ALL = "SELECT * FROM records_summary ORDER BY agencyid";
     private static final String SELECT_QUEUE_COUNT_BY_WORKER = "SELECT worker AS text, COUNT(*), MAX(queued) FROM queue GROUP BY worker ORDER BY worker";
     private static final String SELECT_QUEUE_COUNT_BY_AGENCY = "SELECT agencyid AS text, COUNT(*), MAX(queued) FROM queue GROUP BY agencyid ORDER BY agencyid";
-    private static final String SELECT_QUEUE_COUNT_BY_ERROR = "SELECT error AS text, COUNT(*), MAX(queued) FROM jobdiag WHERE queued > now() - INTERVAL '30 DAYS' GROUP BY error ORDER BY MAX(queued) DESC";
     private static final String SELECT_ERRORS_COUNT_BY_WORKER = "SELECT worker, COUNT(*), MAX(queued) FROM jobdiag WHERE queued > now() - INTERVAL '30 DAYS' GROUP BY worker ORDER BY worker";
     private static final String SELECT_ERRORS_COUNT_BY_TYPE = "SELECT worker, error, COUNT(*), MAX(queued) FROM jobdiag WHERE queued > now() - INTERVAL '30 DAYS' GROUP BY worker, error ORDER BY MAX(queued) DESC LIMIT 1000";
 
@@ -372,17 +371,6 @@ public class RawRepoConnector {
 
         try {
             return result = getQueueStats(SELECT_QUEUE_COUNT_BY_AGENCY);
-        } finally {
-            LOGGER.exit(result);
-        }
-    }
-
-    public List<QueueStats> getQueueStatsByError() throws SQLException {
-        LOGGER.entry();
-        List<QueueStats> result = new ArrayList<>();
-
-        try {
-            return result = getQueueStats(SELECT_QUEUE_COUNT_BY_ERROR);
         } finally {
             LOGGER.exit(result);
         }
