@@ -7,10 +7,12 @@ import React from "react";
 import {Tab, Tabs} from "react-bootstrap";
 import HydraEnqueue from "./hydra-enqueue";
 import HydraStatistics from "./hydra-statistics";
+import HydraErrors from "./hydra-errors";
 import superagent from "superagent";
 
 const TAB_QUEUE = 2;
 const TAB_STATISTICS = 3;
+const TAB_ERRORS = 4;
 
 class HydraMain extends React.Component {
     constructor(props) {
@@ -46,6 +48,12 @@ class HydraMain extends React.Component {
         }
     }
 
+    renderErrors() {
+        if (this.state.key === TAB_ERRORS) {
+            return (<div><p/><HydraErrors/></div>);
+        }
+    }
+
     getInstanceName() {
         superagent.get('/api/hydra/instance').end((err, res) => {
             if (err) {
@@ -70,6 +78,9 @@ class HydraMain extends React.Component {
                     </Tab>
                     <Tab eventKey={TAB_STATISTICS} title="Oversigt">
                         {this.renderStatistics()}
+                    </Tab>
+                    <Tab eventKey={TAB_ERRORS} title="Fejloversigt">
+                        {this.renderErrors()}
                     </Tab>
                 </Tabs>
             </div>
