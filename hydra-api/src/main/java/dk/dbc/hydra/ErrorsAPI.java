@@ -9,6 +9,7 @@ import dk.dbc.commons.jsonb.JSONBContext;
 import dk.dbc.commons.jsonb.JSONBException;
 import dk.dbc.hydra.common.ApplicationConstants;
 import dk.dbc.hydra.dao.RawRepoConnector;
+import dk.dbc.hydra.errors.WorkerErrorTypes;
 import dk.dbc.hydra.errors.WorkerErrors;
 import dk.dbc.hydra.timer.Stopwatch;
 import dk.dbc.hydra.timer.StopwatchInterceptor;
@@ -51,6 +52,26 @@ public class ErrorsAPI {
             return Response.ok(res, MediaType.APPLICATION_JSON).build();
         } catch (SQLException | JSONBException ex) {
             LOGGER.error("Exception during getErrorsByWorker", ex);
+            return Response.serverError().build();
+        } finally {
+            LOGGER.exit(res);
+        }
+    }
+
+    @Stopwatch
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    @Path(ApplicationConstants.API_ERRORS_TYPE)
+    public Response getErrorsByType() {
+        LOGGER.entry();
+        String res = "";
+
+        try {
+            final List<WorkerErrorTypes> workerErrorTypes = rawrepo.getWorkerErrorTypes();
+            res = jsonbContext.marshall(workerErrorTypes);
+            return Response.ok(res, MediaType.APPLICATION_JSON).build();
+        } catch (SQLException | JSONBException ex) {
+            LOGGER.error("Exception during getErrorsByType", ex);
             return Response.serverError().build();
         } finally {
             LOGGER.exit(res);

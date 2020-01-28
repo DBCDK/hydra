@@ -5,6 +5,7 @@
 
 package dk.dbc.hydra.dao;
 
+import dk.dbc.hydra.errors.WorkerErrorTypes;
 import dk.dbc.hydra.errors.WorkerErrors;
 import dk.dbc.hydra.queue.QueueException;
 import dk.dbc.hydra.queue.QueueProvider;
@@ -46,6 +47,7 @@ public class RawRepoConnector {
     private static final String SELECT_QUEUE_COUNT_BY_AGENCY = "SELECT agencyid AS text, COUNT(*), MAX(queued) FROM queue GROUP BY agencyid ORDER BY agencyid";
     private static final String SELECT_QUEUE_COUNT_BY_ERROR = "SELECT error AS text, COUNT(*), MAX(queued) FROM jobdiag WHERE queued > now() - INTERVAL '30 DAYS' GROUP BY error ORDER BY MAX(queued) DESC";
     private static final String SELECT_ERRORS_COUNT_BY_WORKER = "SELECT worker, COUNT(*), MAX(queued) FROM jobdiag WHERE queued > now() - INTERVAL '30 DAYS' GROUP BY worker ORDER BY worker";
+    private static final String SELECT_ERRORS_COUNT_BY_TYPE = "SELECT worker, error, COUNT(*), MAX(queued) FROM jobdiag WHERE queued > now() - INTERVAL '30 DAYS' GROUP BY worker, error ORDER BY MAX(queued) DESC LIMIT 1000";
 
     @Resource(lookup = "jdbc/rawrepo")
     private DataSource globalDataSource;
@@ -398,6 +400,27 @@ public class RawRepoConnector {
                     final int count = resultSet.getInt("count");
                     final String date = resultSet.getString("max");
                     result.add(new WorkerErrors(worker, count, date));
+                }
+            }
+            return result;
+        } finally {
+            LOGGER.exit(result);
+        }
+    }
+
+    public List<WorkerErrorTypes> getWorkerErrorTypes() throws SQLException {
+        LOGGER.entry();
+        final List<WorkerErrorTypes> result = new ArrayList<>();
+
+        try (Connection connection = globalDataSource.getConnection();
+             Statement stmt = connection.createStatement()) {
+            try (ResultSet resultSet = stmt.executeQuery(SELECT_ERRORS_COUNT_BY_TYPE)) {
+                while (resultSet.next()) {
+                    final String worker = resultSet.getString("worker");
+                    final String error = resultSet.getString("error");
+                    final int count = resultSet.getInt("count");
+                    final String date = resultSet.getString("max");
+                    result.add(new WorkerErrorTypes(worker, error, count, date));
                 }
             }
             return result;
