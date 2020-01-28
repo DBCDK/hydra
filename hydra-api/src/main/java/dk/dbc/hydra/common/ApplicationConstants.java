@@ -26,6 +26,9 @@ public class ApplicationConstants {
     public static final String API_STATS_QUEUE_WORKERS = "/queueByWorker";
     public static final String API_STATS_QUEUE_ERRORS = "/queueByError";
 
+    public static final String API_ERRORS = "/errors";
+    public static final String API_ERRORS_WORKERS = "/byWorker";
+
     public static final String OPENAGENCY_URL = "OPENAGENCY_URL";
     public static final String OPENAGENCY_CACHE_AGE = "OPENAGENCY_CACHE_AGE";
     public static final String OPENAGENCY_CACHE_AGE_DEFAULT = String.valueOf(8); // 8 hours
