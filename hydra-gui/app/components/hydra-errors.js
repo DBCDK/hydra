@@ -13,15 +13,19 @@ class HydraErrors extends React.Component {
         super(props);
         this.state = {
             errorsByWorker: null,
+            errorsByType: null,
 
-            loadingErrorsByWorker: false
+            loadingErrorsByWorker: false,
+            loadingErrorsByType: false
         };
 
         this.fetchErrorsByWorkers = this.fetchErrorsByWorkers.bind(this);
+        this.fetchErrorsByType = this.fetchErrorsByType.bind(this);
     }
 
     componentDidMount() {
         this.fetchErrorsByWorkers();
+        this.fetchErrorsByType();
     }
 
     fetchErrorsByWorkers() {
@@ -40,27 +44,67 @@ class HydraErrors extends React.Component {
         });
     }
 
+    fetchErrorsByType() {
+        this.setState({loadingErrorsByType: true});
+        superagent.get('/api/errors/byType').end((err, res) => {
+            if (err) {
+                alert("FEJL!\n\nDer opstod fejl under kald til /api/errors/byType:\n" + err)
+            } else if (res.body === null) {
+                alert('FEJL!\n\nDer kom tomt svar tilbage fra api/errors/byType');
+            } else {
+                this.setState({
+                    errorsByType: res.body,
+                    loadingErrorsByType: false
+                });
+            }
+        });
+    }
+
     render() {
         return (
             <div>
-                <h2>Fejloversigt - workers</h2>
-                <BootstrapTable
-                    data={this.state.errorsByWorker}
-                    striped={true}
-                    options={{noDataText: 'Der blev ikke fundet nogen rækker'}}
-                    bordered={false}>
-                    <TableHeaderColumn dataField='worker' isKey>Worker</TableHeaderColumn>
-                    <TableHeaderColumn dataField='count'>Antal</TableHeaderColumn>
-                    <TableHeaderColumn dataField='date'>Ajourdato</TableHeaderColumn>
-                </BootstrapTable>
-                <br/>
-                <Button
-                    onClick={this.fetchErrorsByWorkers}
-                    type='submit'
-                    className='btn btn-success'
-                    disabled={this.state.loadingErrorsByWorker}>
-                    Genindlæs
-                </Button>
+                <div>
+                    <h2>Fejloversigt - workers</h2>
+                    <BootstrapTable
+                        data={this.state.errorsByWorker}
+                        striped={true}
+                        options={{noDataText: 'Der blev ikke fundet nogen rækker'}}
+                        bordered={false}>
+                        <TableHeaderColumn dataField='worker' isKey>Worker</TableHeaderColumn>
+                        <TableHeaderColumn dataField='count'>Antal</TableHeaderColumn>
+                        <TableHeaderColumn dataField='date'>Ajourdato</TableHeaderColumn>
+                    </BootstrapTable>
+                    <br/>
+                    <Button
+                        onClick={this.fetchErrorsByWorkers}
+                        type='submit'
+                        className='btn btn-success'
+                        disabled={this.state.loadingErrorsByWorker}>
+                        Genindlæs
+                    </Button>
+                </div>
+                <hr/>
+                <div>
+                    <h2>Fejloversigt - fejltype (de maksimalt 1000 senest registrerede typer)</h2>
+                    <BootstrapTable
+                        data={this.state.errorsByType}
+                        striped={true}
+                        options={{noDataText: 'Der blev ikke fundet nogen rækker'}}
+                        bordered={false}>
+                        <TableHeaderColumn dataField='worker' isKey>Worker</TableHeaderColumn>
+                        <TableHeaderColumn dataField='error' width='50%' tdStyle={ { whiteSpace: 'normal' } }>Type</TableHeaderColumn>
+                        <TableHeaderColumn dataField='count'>Antal</TableHeaderColumn>
+                        <TableHeaderColumn dataField='date'>Ajourdato</TableHeaderColumn>
+                    </BootstrapTable>
+                    <br/>
+                    <Button
+                        onClick={this.fetchErrorsByType}
+                        type='submit'
+                        className='btn btn-success'
+                        disabled={this.state.loadingErrorsByType}>
+                        Genindlæs
+                    </Button>
+                </div>
             </div>
         )
     }
