@@ -16,7 +16,8 @@ class HydraErrors extends React.Component {
             errorsByType: null,
 
             loadingErrorsByWorker: false,
-            loadingErrorsByType: false
+            loadingErrorsByType: false,
+            enqueueing: []
         };
 
         this.fetchErrorsByWorkers = this.fetchErrorsByWorkers.bind(this);
@@ -60,6 +61,36 @@ class HydraErrors extends React.Component {
         });
     }
 
+    reEnqueue(row, rowIndex) {
+        let enqueueingState = this.state.enqueueing;
+        enqueueingState[rowIndex] = true;
+        this.setState({enqueueing: enqueueingState});
+        superagent.post('/api/errors/byWorker')
+            .send(row)
+            .end((err, res) => {
+                if (err) {
+                    alert("FEJL!\n\nDer opstod fejl under forsøg på at genkø " + row.worker + ":\n" + err)
+                }
+                let enqueueingState = this.state.enqueueing;
+                enqueueingState[rowIndex] = false;
+                this.setState({enqueueing: enqueueingState});
+                this.fetchErrorsByWorkers();
+                this.fetchErrorsByType();
+            });
+    }
+
+    reEnqueueButton(cell, row, enumObject, rowIndex) {
+        return (
+            <Button
+                type="submit"
+                className='btn btn-success'
+                disabled={this.state.enqueueing[rowIndex]}
+                onClick={() => this.reEnqueue(row, rowIndex)}>
+                Genkø
+            </Button>
+        )
+    }
+
     render() {
         return (
             <div>
@@ -73,6 +104,7 @@ class HydraErrors extends React.Component {
                         <TableHeaderColumn dataField='worker' isKey>Worker</TableHeaderColumn>
                         <TableHeaderColumn dataField='count'>Antal</TableHeaderColumn>
                         <TableHeaderColumn dataField='date'>Ajourdato</TableHeaderColumn>
+                        <TableHeaderColumn dataField='button' dataFormat={this.reEnqueueButton.bind(this)}>Handling</TableHeaderColumn>
                     </BootstrapTable>
                     <br/>
                     <Button
