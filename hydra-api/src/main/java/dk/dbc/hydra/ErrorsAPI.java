@@ -19,7 +19,9 @@ import org.slf4j.ext.XLoggerFactory;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -55,6 +57,20 @@ public class ErrorsAPI {
             return Response.serverError().build();
         } finally {
             LOGGER.exit(res);
+        }
+    }
+
+    @POST
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Path(ApplicationConstants.API_ERRORS_WORKERS)
+    @Stopwatch
+    public void reEnqueueErrorsByWorker(WorkerErrors workerErrors) throws SQLException {
+        LOGGER.entry();
+        try {
+            LOGGER.info("re-enqueueing errors for {}", workerErrors);
+            rawrepo.reEnqueue(workerErrors);
+        } finally {
+            LOGGER.exit();
         }
     }
 
