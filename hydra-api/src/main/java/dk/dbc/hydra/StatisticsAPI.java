@@ -103,27 +103,4 @@ public class StatisticsAPI {
             LOGGER.exit(res);
         }
     }
-
-    @Stopwatch
-    @GET
-    @Produces({MediaType.APPLICATION_JSON})
-    @Path(ApplicationConstants.API_STATS_QUEUE_ERRORS)
-    public Response getQueueStatsByError() {
-        LOGGER.entry();
-        String res = "";
-
-        try {
-            final List<QueueStats> queueStats = rawrepo.getQueueStatsByError();
-
-            res = jsonbContext.marshall(queueStats);
-
-            return Response.ok(res, MediaType.APPLICATION_JSON).build();
-        } catch (SQLException | JSONBException ex) {
-            LOGGER.error("Exception during getQueueStatsByError", ex);
-            return Response.serverError().build();
-        } finally {
-            LOGGER.exit(res);
-        }
-    }
-
 }

@@ -5,6 +5,8 @@
 
 package dk.dbc.hydra.dao;
 
+import dk.dbc.hydra.errors.WorkerErrorTypes;
+import dk.dbc.hydra.errors.WorkerErrors;
 import dk.dbc.hydra.queue.QueueException;
 import dk.dbc.hydra.queue.QueueProvider;
 import dk.dbc.hydra.queue.QueueWorker;
@@ -23,10 +25,13 @@ import javax.interceptor.Interceptors;
 import javax.sql.DataSource;
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,7 +48,17 @@ public class RawRepoConnector {
     private static final String SELECT_RECORDS_SUMMARY_ALL = "SELECT * FROM records_summary ORDER BY agencyid";
     private static final String SELECT_QUEUE_COUNT_BY_WORKER = "SELECT worker AS text, COUNT(*), MAX(queued) FROM queue GROUP BY worker ORDER BY worker";
     private static final String SELECT_QUEUE_COUNT_BY_AGENCY = "SELECT agencyid AS text, COUNT(*), MAX(queued) FROM queue GROUP BY agencyid ORDER BY agencyid";
-    private static final String SELECT_QUEUE_COUNT_BY_ERROR = "SELECT error AS text, COUNT(*), MAX(queued) FROM jobdiag WHERE queued > now() - INTERVAL '30 DAYS' GROUP BY error ORDER BY MAX(queued) DESC";
+    private static final String SELECT_ERRORS_COUNT_BY_WORKER = "SELECT worker, COUNT(*), MAX(queued) FROM jobdiag WHERE queued > now() - INTERVAL '30 DAYS' GROUP BY worker ORDER BY worker";
+    private static final String SELECT_ERRORS_COUNT_BY_TYPE = "SELECT worker, error, COUNT(*), MAX(queued) FROM jobdiag WHERE queued > now() - INTERVAL '30 DAYS' GROUP BY worker, error ORDER BY MAX(queued) DESC LIMIT 1000";
+    private static final String INSERT_INTO_QUEUE_FROM_JOBDIAG_BY_WORKER_AND_QUEUED =
+            "INSERT INTO queue(bibliographicrecordid, agencyid, worker, priority) " +
+                    "SELECT bibliographicrecordid, agencyid, worker, priority FROM jobdiag " +
+                    "WHERE worker = ? AND queued <= ?";
+    private static final String DELETE_FROM_JOBDIAG_BY_WORKER_AND_QUEUED =
+            "DELETE FROM jobdiag WHERE worker = ? AND queued <= ?";
+
+    private static final DateTimeFormatter DATE_TIME_WITH_TIMEZONE_FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSX");
 
     @Resource(lookup = "jdbc/rawrepo")
     private DataSource globalDataSource;
@@ -373,14 +388,65 @@ public class RawRepoConnector {
         }
     }
 
-    public List<QueueStats> getQueueStatsByError() throws SQLException {
+    public List<WorkerErrors> getWorkerErrors() throws SQLException {
         LOGGER.entry();
-        List<QueueStats> result = new ArrayList<>();
+        final List<WorkerErrors> result = new ArrayList<>();
 
-        try {
-            return result = getQueueStats(SELECT_QUEUE_COUNT_BY_ERROR);
+        try (Connection connection = globalDataSource.getConnection();
+             Statement stmt = connection.createStatement()) {
+            try (ResultSet resultSet = stmt.executeQuery(SELECT_ERRORS_COUNT_BY_WORKER)) {
+                while (resultSet.next()) {
+                    final String worker = resultSet.getString("worker");
+                    final int count = resultSet.getInt("count");
+                    final String date = resultSet.getString("max");
+                    result.add(new WorkerErrors(worker, count, date));
+                }
+            }
+            return result;
         } finally {
             LOGGER.exit(result);
+        }
+    }
+
+    public List<WorkerErrorTypes> getWorkerErrorTypes() throws SQLException {
+        LOGGER.entry();
+        final List<WorkerErrorTypes> result = new ArrayList<>();
+
+        try (Connection connection = globalDataSource.getConnection();
+             Statement stmt = connection.createStatement()) {
+            try (ResultSet resultSet = stmt.executeQuery(SELECT_ERRORS_COUNT_BY_TYPE)) {
+                while (resultSet.next()) {
+                    final String worker = resultSet.getString("worker");
+                    final String error = resultSet.getString("error");
+                    final int count = resultSet.getInt("count");
+                    final String date = resultSet.getString("max");
+                    result.add(new WorkerErrorTypes(worker, error, count, date));
+                }
+            }
+            return result;
+        } finally {
+            LOGGER.exit(result);
+        }
+    }
+
+    public void reEnqueue(WorkerErrors workerErrors) throws SQLException {
+        LOGGER.entry();
+        final Timestamp timestamp = getTimestampFromDateTimeWithTimezone(workerErrors.getDate());
+        try (Connection connection = globalDataSource.getConnection();
+             PreparedStatement enqueueStmt = connection.prepareStatement(
+                     INSERT_INTO_QUEUE_FROM_JOBDIAG_BY_WORKER_AND_QUEUED);
+             PreparedStatement deleteStmt = connection.prepareStatement(
+                     DELETE_FROM_JOBDIAG_BY_WORKER_AND_QUEUED)) {
+            enqueueStmt.setString(1, workerErrors.getWorker());
+            enqueueStmt.setTimestamp(2, timestamp);
+            int rowsUpdated = enqueueStmt.executeUpdate();
+            LOGGER.info("re-enqueued {} rows for {}", rowsUpdated, workerErrors.getWorker());
+            deleteStmt.setString(1, workerErrors.getWorker());
+            deleteStmt.setTimestamp(2, timestamp);
+            rowsUpdated = deleteStmt.executeUpdate();
+            LOGGER.info("deleted {} rows from jobdiag for {}", rowsUpdated, workerErrors.getWorker());
+        } finally {
+            LOGGER.exit();
         }
     }
 
@@ -406,4 +472,8 @@ public class RawRepoConnector {
         }
     }
 
+    private static Timestamp getTimestampFromDateTimeWithTimezone(String dateTimeString) {
+        final OffsetDateTime dateTime = OffsetDateTime.parse(dateTimeString, DATE_TIME_WITH_TIMEZONE_FORMATTER);
+        return Timestamp.valueOf(dateTime.toLocalDateTime());  // to retain nanosecond precision
+    }
 }

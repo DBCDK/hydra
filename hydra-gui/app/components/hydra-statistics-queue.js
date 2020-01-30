@@ -15,22 +15,18 @@ class HydraStatisticsQueue extends React.Component {
         this.state = {
             statQueueByWorker: null,
             statQueueByAgency: null,
-            statQueueByError: null,
 
             loadingStatQueueByWorker: false,
             loadingStatQueueByAgency: false,
-            loadingStatQueueByError: false
         };
 
         this.getStatQueueByAgency = this.getStatQueueByAgency.bind(this);
         this.getStatQueueByWorker = this.getStatQueueByWorker.bind(this);
-        this.getStatQueueByError = this.getStatQueueByError.bind(this);
     }
 
     componentDidMount() {
         this.getStatQueueByAgency();
         this.getStatQueueByWorker();
-        this.getStatQueueByError();
     }
 
     getStatQueueByWorker() {
@@ -60,22 +56,6 @@ class HydraStatisticsQueue extends React.Component {
                 this.setState({
                     statQueueByAgency: res.body,
                     loadingStatQueueByAgency: false
-                });
-            }
-        });
-    }
-
-    getStatQueueByError() {
-        this.setState({loadingStatQueueByError: true});
-        superagent.get('/api/stats/queueByError').end((err, res) => {
-            if (err) {
-                alert("FEJL!\n\nDer opstod fejl under kald til /api/stats/queueByError:\n" + err)
-            } else if (res.body === null) {
-                alert('FEJL!\n\nDer kom tomt svar tilbage fra api/stats/queueByError');
-            } else {
-                this.setState({
-                    statQueueByError: res.body,
-                    loadingStatQueueByError: false
                 });
             }
         });
@@ -122,27 +102,6 @@ class HydraStatisticsQueue extends React.Component {
                         type='submit'
                         className='btn btn-success'
                         disabled={this.state.loadingStatQueueByAgency}>
-                        Genindlæs
-                    </Button>
-                </div>
-                <hr/>
-                <div>
-                    <h2>Køoversigt - fejl</h2>
-                    <BootstrapTable
-                        data={this.state.statQueueByError}
-                        striped={true}
-                        options={{noDataText: 'Der blev ikke fundet nogen rækker'}}
-                        bordered={false}>
-                        <TableHeaderColumn dataField='text' isKey>Fejlbesked</TableHeaderColumn>
-                        <TableHeaderColumn dataField='count'>Antal</TableHeaderColumn>
-                        <TableHeaderColumn dataField='date'>Ajourdato</TableHeaderColumn>
-                    </BootstrapTable>
-                    <br/>
-                    <Button
-                        onClick={this.getStatQueueByError}
-                        type='submit'
-                        className='btn btn-success'
-                        disabled={this.state.loadingStatQueueByError}>
                         Genindlæs
                     </Button>
                 </div>
