@@ -9,6 +9,7 @@ import dk.dbc.hydra.ErrorsAPI;
 import dk.dbc.hydra.HydraAPI;
 import dk.dbc.hydra.LibraryAPI;
 import dk.dbc.hydra.QueueAPI;
+import dk.dbc.hydra.RecordSummaryAPI;
 import dk.dbc.hydra.StatisticsAPI;
 
 import javax.ws.rs.ApplicationPath;
@@ -24,7 +25,12 @@ import java.util.Set;
 @ApplicationPath("/api")
 public class HydraApplication extends Application {
     private static final Set<Class<?>> classes = new HashSet<>(Arrays.asList(
-            QueueAPI.class, LibraryAPI.class, HydraAPI.class, StatisticsAPI.class, ErrorsAPI.class));
+            QueueAPI.class,
+            LibraryAPI.class,
+            HydraAPI.class,
+            StatisticsAPI.class,
+            ErrorsAPI.class,
+            RecordSummaryAPI.class));
 
     @Override
     public Set<Class<?>> getClasses() {

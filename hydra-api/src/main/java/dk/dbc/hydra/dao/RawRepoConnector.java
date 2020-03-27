@@ -56,6 +56,7 @@ public class RawRepoConnector {
                     "WHERE worker = ? AND queued <= ?";
     private static final String DELETE_FROM_JOBDIAG_BY_WORKER_AND_QUEUED =
             "DELETE FROM jobdiag WHERE worker = ? AND queued <= ?";
+    private static final String CALL_REFRESH_RECORDS_SUMMARY_BY_AGENCY_ID = "SELECT * FROM refresh_records_summary_by_agencyid(?)";
 
     private static final DateTimeFormatter DATE_TIME_WITH_TIMEZONE_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSX");
@@ -363,6 +364,19 @@ public class RawRepoConnector {
             return result;
         } finally {
             LOGGER.exit(result);
+        }
+    }
+
+    public void refreshRecordSummaryByAgencyId(int agencyId) throws SQLException {
+        LOGGER.entry();
+
+        try (Connection connection = globalDataSource.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(CALL_REFRESH_RECORDS_SUMMARY_BY_AGENCY_ID)) {
+            stmt.setInt(1, agencyId);
+
+            stmt.executeQuery();
+        } finally {
+            LOGGER.exit();
         }
     }
 
