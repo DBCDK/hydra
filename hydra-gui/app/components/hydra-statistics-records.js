@@ -40,24 +40,47 @@ class HydraStatisticsRecords extends React.Component {
         };
 
         this.getRecordsSummary = this.getRecordsSummary.bind(this);
+        this.refreshButtonFormatter = this.refreshButtonFormatter.bind(this);
+        this.refreshRecordSummaryByAgencyId = this.refreshRecordSummaryByAgencyId.bind(this);
     }
 
     componentDidMount(props) {
         this.getRecordsSummary();
     }
 
+    refreshButtonFormatter(cell, row, rowIndex) {
+        return <div>
+            <Button
+                disabled={this.state.loadingRecordsSummary}
+                onClick={() =>
+                    this.refreshRecordSummaryByAgencyId(cell)}
+            style={{height: '25px', paddingTop: '1px'}}>Refresh</Button>
+        </div>
+    };
+
     getRecordsSummary() {
         this.setState({loadingRecordsSummary: true});
-        superagent.get('/api/stats/recordsSummary').end((err, res) => {
+        superagent.get('/api/recordSummary/list').end((err, res) => {
             if (err) {
-                alert("FEJL!\n\nDer opstod fejl under kald til /api/stats/recordsSummary:\n" + err)
+                alert("FEJL!\n\nDer opstod fejl under kald til /api/recordSummary/list:\n" + err)
             } else if (res.body === null) {
-                alert('FEJL!\n\nDer kom tomt svar tilbage fra api/stats/recordsSummary');
+                alert('FEJL!\n\nDer kom tomt svar tilbage fra api/recordSummary/list');
             } else {
                 this.setState({
                     recordsSummaryData: res.body,
                     loadingRecordsSummary: false
                 });
+            }
+        });
+    }
+
+    refreshRecordSummaryByAgencyId(agencyId) {
+        this.setState({loadingRecordsSummary: true});
+        superagent.post('/api/recordSummary/refresh/' + agencyId).end((err, res) => {
+            if (err) {
+                alert("FEJL!\n\nDer opstod fejl under kald til /api/recordSummary/refresh:\n" + err)
+            } else {
+                this.getRecordsSummary();
             }
         });
     }
@@ -104,6 +127,9 @@ class HydraStatisticsRecords extends React.Component {
                                        dataSort
                                        dataAlign='right'
                                        dataFormat={dateFormatter}>Ajourdato</TableHeaderColumn>
+                    <TableHeaderColumn dataField='agencyId'
+                                       dataAlign='right'
+                                       dataFormat={this.refreshButtonFormatter}>Genindlæs</TableHeaderColumn>
                 </BootstrapTable>
             </div>
         );
