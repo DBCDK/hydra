@@ -10,7 +10,6 @@ import dk.dbc.commons.jsonb.JSONBException;
 import dk.dbc.hydra.common.ApplicationConstants;
 import dk.dbc.hydra.dao.RawRepoConnector;
 import dk.dbc.hydra.stats.QueueStats;
-import dk.dbc.hydra.stats.RecordSummary;
 import dk.dbc.hydra.timer.Stopwatch;
 import dk.dbc.hydra.timer.StopwatchInterceptor;
 import org.slf4j.ext.XLogger;
