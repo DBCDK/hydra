@@ -4,12 +4,12 @@
   "dependencies": {
     "js-yaml": "^3.13.1",
     "popper": "^1.0.1",
-    "react": "^16.8.6",
-    "react-bootstrap": "^0.32.4",
+    "react": "^16.13.1",
+    "react-bootstrap": "^0.33.1",
     "react-bootstrap-table": "^4.3.1",
-    "react-dom": "^16.8.6",
-    "react-table": "^6.10.0",
-    "superagent": "^5.1.0"
+    "react-dom": "^16.13.1",
+    "react-table": "^6.11.5",
+    "superagent": "^5.2.2"
   },
   "license": "GPL-3.0",
   "scripts": {
@@ -23,9 +23,9 @@
     "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
-    "webpack": "^4.41.2",
-    "webpack-cli": "3.3.10",
-    "webpack-dev-server": "3.9.0"
+    "webpack": "^4.42.1",
+    "webpack-cli": "3.3.11",
+    "webpack-dev-server": "3.10.3"
   },
   "description": "Hydra GUI"
 }
