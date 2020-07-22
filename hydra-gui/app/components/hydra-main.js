@@ -5,12 +5,16 @@
 
 import React from "react";
 import {Tab, Tabs} from "react-bootstrap";
+import HydraEnqueueAgency from "./hydra-enqueue-agency";
+import HydraEnqueueRecords from "./hydra-enqueue-records";
 import HydraEnqueue from "./hydra-enqueue";
 import HydraStatistics from "./hydra-statistics";
 import HydraErrors from "./hydra-errors";
 import superagent from "superagent";
 
 const TAB_QUEUE = 2;
+const TAB_ENQUEUE_AGENCY = 5;
+const TAB_ENQUEUE_RECORDS = 6;
 const TAB_STATISTICS = 3;
 const TAB_ERRORS = 4;
 
@@ -23,7 +27,9 @@ class HydraMain extends React.Component {
         };
 
         this.handleSelect = this.handleSelect.bind(this);
-        this.renderQueue = this.renderQueue.bind(this);
+        this.renderEnqueue = this.renderEnqueue.bind(this);
+        this.renderEnqueueAgency = this.renderEnqueueAgency.bind(this);
+        this.renderEnqueueRecords = this.renderEnqueueRecords.bind(this);
         this.renderStatistics = this.renderStatistics.bind(this);
         this.getInstanceName = this.getInstanceName.bind(this);
     }
@@ -36,7 +42,7 @@ class HydraMain extends React.Component {
         this.setState({key: key});
     }
 
-    renderQueue() {
+    renderEnqueue() {
         if (this.state.key === TAB_QUEUE) {
             return (<div><p/><HydraEnqueue/></div>);
         }
@@ -51,6 +57,18 @@ class HydraMain extends React.Component {
     renderErrors() {
         if (this.state.key === TAB_ERRORS) {
             return (<div><p/><HydraErrors/></div>);
+        }
+    }
+
+    renderEnqueueAgency() {
+        if (this.state.key === TAB_ENQUEUE_AGENCY) {
+            return (<div><p/><HydraEnqueueAgency/></div>);
+        }
+    }
+
+    renderEnqueueRecords() {
+        if (this.state.key === TAB_ENQUEUE_RECORDS) {
+            return (<div><p/><HydraEnqueueRecords/></div>);
         }
     }
 
@@ -73,8 +91,14 @@ class HydraMain extends React.Component {
                 <Tabs activeKey={this.state.key}
                       onSelect={this.handleSelect}
                       id="controlled-tab-example">
-                    <Tab eventKey={TAB_QUEUE} title="Køpålæggelse">
-                        {this.renderQueue()}
+                    <Tab eventKey={TAB_QUEUE} title="Køpålæggelse - speciel">
+                        {this.renderEnqueue()}
+                    </Tab>
+                    <Tab eventKey={TAB_ENQUEUE_AGENCY} title="Køpålæggelse - bibliotek">
+                        {this.renderEnqueueAgency()}
+                    </Tab>
+                    <Tab eventKey={TAB_ENQUEUE_RECORDS} title="Køpålæggelse - poster">
+                        {this.renderEnqueueRecords()}
                     </Tab>
                     <Tab eventKey={TAB_STATISTICS} title="Oversigt">
                         {this.renderStatistics()}

@@ -14,6 +14,8 @@ import dk.dbc.hydra.dao.HoldingsItemsConnector;
 import dk.dbc.hydra.dao.OpenAgencyConnector;
 import dk.dbc.hydra.dao.RawRepoConnector;
 import dk.dbc.hydra.queue.AgencyAnalysis;
+import dk.dbc.hydra.queue.EnqueueAgencyRequest;
+import dk.dbc.hydra.queue.EnqueueAgencyResponse;
 import dk.dbc.hydra.queue.QueueException;
 import dk.dbc.hydra.queue.QueueJob;
 import dk.dbc.hydra.queue.QueueProcessRequest;
@@ -26,12 +28,17 @@ import dk.dbc.hydra.timer.Stopwatch;
 import dk.dbc.hydra.timer.StopwatchInterceptor;
 import dk.dbc.openagency.client.OpenAgencyException;
 import dk.dbc.rawrepo.RecordId;
+import dk.dbc.rawrepo.dto.EnqueueAgencyResponseDTO;
+import dk.dbc.rawrepo.dto.QueueWorkerCollectionDTO;
+import dk.dbc.rawrepo.queue.QueueServiceConnector;
+import dk.dbc.rawrepo.queue.QueueServiceConnectorException;
 import org.apache.commons.collections4.map.PassiveExpiringMap;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -61,11 +68,13 @@ public class QueueAPI {
 
     private static final String MESSAGE_FAIL_NO_RECORDS = "Der blev ikke fundet nogen poster, så intet kan lægges på kø";
     private static final String MESSAGE_FAIL_INVALID_AGENCY_FORMAT = "Værdien '%s' har ikke et gyldigt format for et biblioteksnummer";
+    private static final String MESSAGE_FAIL_INVALID_AGENCY_LENGTH = "Biblioteksnummeret '%s' skal have en længe på præcis seks tegn";
     private static final String MESSAGE_FAIL_INVAILD_AGENCY_ID = "Biblioteksnummeret '%s' tilhører ikke en af biblioteksgrupperne %s";
     private static final String MESSAGE_FAIL_QUEUETYPE_NULL = "Der skal angives en køtype";
     private static final String MESSAGE_FAIL_QUEUETYPE = "Køtypen '%s' kunne ikke valideres";
     private static final String MESSAGE_FAIL_PROVIDER_NULL = "Der skal angives en provider";
     private static final String MESSAGE_FAIL_PROVIDER = "Provideren '%s' kunne ikke valideres";
+    private static final String MESSAGE_FAIL_WORKER_MISSING = "Der skal angives en worker";
     private static final String MESSAGE_FAIL_AGENCY_MISSING = "Der skal angives mindst ét biblioteksnummer";
 
     private static final String MESSAGE_FAIL_SESSION_ID_NULL = "Der skal være angivet et sessionId";
@@ -87,6 +96,9 @@ public class QueueAPI {
     @EJB
     EnvironmentVariables variables;
 
+    @Inject
+    QueueServiceConnector queueServiceConnector;
+
     private final JSONBContext jsonbContext = new JSONBContext();
 
     // Not made private to facilitate easier testing
@@ -96,7 +108,7 @@ public class QueueAPI {
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    @Path(ApplicationConstants.API_QUEUE_VALIDATE)
+    @Path("validate")
     public Response validate(String inputStr) {
         String res = "";
         final QueueValidateResponse response = new QueueValidateResponse();
@@ -200,7 +212,7 @@ public class QueueAPI {
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    @Path(ApplicationConstants.API_QUEUE_PROCESS)
+    @Path("process")
     public Response process(String inputStr) {
         String res = "";
         final QueueProcessResponse response = new QueueProcessResponse();
@@ -391,7 +403,7 @@ public class QueueAPI {
     @Stopwatch
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    @Path(ApplicationConstants.API_QUEUE_PROVIDERS)
+    @Path("providers")
     public Response getProviderNames() {
         LOGGER.entry();
         String res = "";
@@ -413,7 +425,7 @@ public class QueueAPI {
     @Stopwatch
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    @Path(ApplicationConstants.API_QUEUE_TYPES)
+    @Path("types")
     public Response getQueueTypes() {
         LOGGER.entry();
 
@@ -436,6 +448,105 @@ public class QueueAPI {
 
             return Response.ok(res, MediaType.APPLICATION_JSON).build();
         } catch (JSONBException ex) {
+            LOGGER.error("Unexpected exception:", ex);
+            return Response.serverError().entity(ex.toString()).build();
+        } finally {
+            LOGGER.exit(res);
+        }
+    }
+
+    @Stopwatch
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    @Path("workers")
+    public Response getWorkers() {
+        LOGGER.entry();
+
+        String res = "";
+        try {
+            final QueueWorkerCollectionDTO queueWorkerCollectionDTO = queueServiceConnector.getQueueWorkers();
+
+            res = jsonbContext.marshall(queueWorkerCollectionDTO.getWorkers());
+
+            return Response.ok(res, MediaType.APPLICATION_JSON).build();
+        } catch (JSONBException | QueueServiceConnectorException ex) {
+            LOGGER.error("Unexpected exception:", ex);
+            return Response.serverError().entity(ex.toString()).build();
+        } finally {
+            LOGGER.exit(res);
+        }
+    }
+
+    @Stopwatch
+    @POST
+    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Path("enqueue/agency")
+    public Response enqueueAgency(String inputStr) {
+        LOGGER.entry();
+        LOGGER.info(inputStr);
+
+        final EnqueueAgencyResponse response = new EnqueueAgencyResponse();
+        String res = "";
+
+        try {
+            try {
+                final EnqueueAgencyRequest request = jsonbContext.unmarshall(inputStr, EnqueueAgencyRequest.class);
+                final Set<Integer> agencyIds = new HashSet<>();
+
+                if (request.getAgencies() == null || request.getAgencies().isEmpty()) {
+                    throw new QueueException(MESSAGE_FAIL_AGENCY_MISSING);
+                }
+
+                // Clean and check agency values
+                for (String agencyIdStr : request.getAgencies().split("\n")) {
+                    agencyIdStr = agencyIdStr.trim();
+                    if (!agencyIdStr.isEmpty()) {
+                        if (agencyIdStr.length() != 6) {
+                            throw new QueueException(String.format(MESSAGE_FAIL_INVALID_AGENCY_LENGTH, agencyIdStr));
+                        }
+
+                        try {
+                            agencyIds.add(Integer.parseInt(agencyIdStr));
+                        } catch (NumberFormatException e) {
+                            throw new QueueException(String.format(MESSAGE_FAIL_INVALID_AGENCY_FORMAT, agencyIdStr));
+                        }
+                    }
+                }
+
+                if (request.getWorker() == null || request.getWorker().isEmpty()) {
+                    throw new QueueException(MESSAGE_FAIL_WORKER_MISSING);
+                }
+
+                response.setAgencyAnalysisList(new ArrayList<>());
+                response.setValidated(true);
+
+                for (Integer agencyId : agencyIds) {
+                    final QueueServiceConnector.EnqueueParams params = new QueueServiceConnector.EnqueueParams();
+
+                    if (request.getPriority() != null) {
+                        params.withPriority(request.getPriority());
+                    }
+                    if (request.isEnqueueDBCAsEnrichment() && Arrays.asList(870970, 870971, 870974, 870976, 870979, 190002, 190004).contains(agencyId)) {
+                        params.withEnqueueAs(191919);
+                    }
+
+                    final EnqueueAgencyResponseDTO responseDTO = queueServiceConnector.enqueueAgency(agencyId, request.getWorker(), params);
+                    response.getAgencyAnalysisList().add(new AgencyAnalysis(agencyId, responseDTO.getCount()));
+                }
+
+                res = jsonbContext.marshall(response);
+
+                return Response.ok(res, MediaType.APPLICATION_JSON).build();
+            } catch (QueueException e) {
+                response.setValidated(false);
+                response.setMessage(e.getMessage());
+
+                res = jsonbContext.marshall(response);
+
+                return Response.ok(res, MediaType.APPLICATION_JSON).build();
+            }
+        } catch (JSONBException | QueueServiceConnectorException ex) {
             LOGGER.error("Unexpected exception:", ex);
             return Response.serverError().entity(ex.toString()).build();
         } finally {
