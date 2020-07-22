@@ -316,11 +316,11 @@ public class RawRepoConnector {
         List<EnqueueBulkResult> result = new ArrayList<>();
         try (Connection connection = globalDataSource.getConnection();
              CallableStatement stmt = connection.prepareCall(CALL_ENQUEUE_BULK)) {
-            stmt.setArray(1, stmt.getConnection().createArrayOf("VARCHAR", bibliographicRecordIdList.toArray(new String[bibliographicRecordIdList.size()])));
-            stmt.setArray(2, stmt.getConnection().createArrayOf("NUMERIC", agencyList.toArray(new Integer[agencyList.size()])));
-            stmt.setArray(3, stmt.getConnection().createArrayOf("VARCHAR", providerList.toArray(new String[providerList.size()])));
-            stmt.setArray(4, stmt.getConnection().createArrayOf("VARCHAR", changedListChar.toArray(new String[changedListChar.size()])));
-            stmt.setArray(5, stmt.getConnection().createArrayOf("VARCHAR", leafListChar.toArray(new String[leafListChar.size()])));
+            stmt.setArray(1, stmt.getConnection().createArrayOf("VARCHAR", bibliographicRecordIdList.toArray()));
+            stmt.setArray(2, stmt.getConnection().createArrayOf("NUMERIC", agencyList.toArray()));
+            stmt.setArray(3, stmt.getConnection().createArrayOf("VARCHAR", providerList.toArray()));
+            stmt.setArray(4, stmt.getConnection().createArrayOf("VARCHAR", changedListChar.toArray()));
+            stmt.setArray(5, stmt.getConnection().createArrayOf("VARCHAR", leafListChar.toArray()));
 
             try (ResultSet resultSet = stmt.executeQuery()) {
                 while (resultSet.next()) {
