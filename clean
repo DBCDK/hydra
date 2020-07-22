@@ -1,0 +1,6 @@
+echo "### cleaning hydra project ###"
+
+mvn clean
+git pull --ff-only
+docker rm -f hydra &>/dev/null || true
+exit 0
