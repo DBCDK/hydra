@@ -17,8 +17,9 @@ class HydraEnqueueRecords extends React.Component {
             changed: true,
             leaf: true,
             isLoading: false,
-            records: null,
-            recordAnalysisList: []
+            recordIds: null,
+            recordEnqueueResultList: null,
+            priority: 1000
         };
 
         this.getProviders = this.getProviders.bind(this);
@@ -77,20 +78,50 @@ class HydraEnqueueRecords extends React.Component {
     }
 
     onChangeRecords(event) {
-        this.setState({records: event.target.value});
+        this.setState({recordIds: event.target.value});
     }
 
-    // TODO implement
     enqueue() {
-        let data = {
+        this.setState({isLoading: true, recordEnqueueResultList: null});
+        let data = JSON.stringify({
             provider: this.state.selectedProvider,
             changed: this.state.changed,
             leaf: this.state.leaf,
             priority: this.state.priority,
-            records: this.state.records
-        }
+            recordIds: this.state.recordIds
+        });
 
-        console.log(data);
+        superagent
+            .post('/api/queue/enqueue/records')
+            .send(data)
+            .type('json')
+            .set('Accept', 'application/json')
+            .end((err, res) => {
+                if (err) {
+                    alert("FEJL!\n\nDer opstod fejl under kald til /api/queue/enqueue/records:\n" + err)
+                } else if (res.body === null) {
+                    alert('FEJL!\n\nDer kom tomt svar tilbage fra /api/queue/enqueue/records');
+                } else if (res.body.validated === undefined) {
+                    alert('FEJL!\n\nDer gik et eller andet galt, da svaret ikke indeholder de forventede attributter');
+                } else if (!res.body.validated) {
+                    alert('VALIDERING FEJLEDE!\n\n' + res.body.message);
+                } else {
+                    let response = res.body;
+                    let recordEnqueueResultList = [];
+
+                    response.recordEnqueueResultList.map(function (item) {
+                        recordEnqueueResultList.push({
+                            bibliographicRecordId: item.bibliographicRecordId,
+                            agencyId: item.agencyId,
+                            worker: item.worker,
+                            queued: item.queued
+                        });
+                    });
+                    this.setState({recordEnqueueResultList: recordEnqueueResultList});
+                }
+                this.setState({isLoading: false});
+            });
+        event.preventDefault();
     }
 
     render() {
@@ -119,7 +150,7 @@ class HydraEnqueueRecords extends React.Component {
                                    htmlFor='enqueue-record-changed'>Changed?</label>
                             <div className='col-sm-8'>
                                 <Checkbox onChange={this.onChangeChanged}
-                                          checked={this.changed}
+                                          checked={this.state.changed}
                                           disabled={this.state.isLoading}
                                           id='enqueue-record-changed'/>
                             </div>
@@ -130,7 +161,7 @@ class HydraEnqueueRecords extends React.Component {
                                    htmlFor='enqueue-record-changed'>Leaf?</label>
                             <div className='col-sm-8'>
                                 <Checkbox onChange={this.onChangeLeaf}
-                                          checked={this.leaf}
+                                          checked={this.state.leaf}
                                           disabled={this.state.isLoading}
                                           id='enqueue-record-changed'/>
                             </div>
@@ -143,7 +174,7 @@ class HydraEnqueueRecords extends React.Component {
                                 <input type='text' className='form-control'
                                        id='enqueue-record-priority'
                                        onChange={this.onChangePriority}
-                                       value='1000'
+                                       value={this.state.priority}
                                        readOnly={false}
                                        disabled={this.state.isLoading}/>
                             </div>
@@ -159,11 +190,38 @@ class HydraEnqueueRecords extends React.Component {
                                           rows={15}
                                           onChange={this.onChangeRecords}/>
                             </div>
-                            <p>Format af poster er &lt;bibliographic record id:agency id&gt; separeret med linjeskift. Eksempel:<br/>
+                            <p>Format af poster er &lt;bibliographic record id:agency id&gt; separeret med linjeskift.
+                                Eksempel:<br/>
                                 12345678:870790<br/>
                                 87654321:870790</p>
                         </div>
+                        <div className='form-group'>
+                            <div className='col-sm-offset-2 col-sm-10'>
+                                <Button className='btn btn-success'
+                                        onClick={this.enqueue}
+                                        disabled={this.state.isLoading}>
+                                    Udfør
+                                </Button>
+                            </div>
+                        </div>
                     </form>
+                    {this.state.recordEnqueueResultList != null &&
+                    <div>
+                        <h2>Resultat</h2>
+                        <div className='container col-sm-offset-2 col-sm-8'>
+                            <BootstrapTable
+                                data={this.state.recordEnqueueResultList}
+                                striped={true}
+                                options={{noDataText: 'Ingen poster'}}
+                                bordered={false}>
+                                <TableHeaderColumn dataField='bibliographicRecordId' isKey>Post id</TableHeaderColumn>
+                                <TableHeaderColumn dataField='agencyId'>Biblioteksnummer</TableHeaderColumn>
+                                <TableHeaderColumn dataField='worker'>Worker</TableHeaderColumn>
+                                <TableHeaderColumn dataField='queued'>Er lagt på kø?</TableHeaderColumn>
+                            </BootstrapTable>
+                        </div>
+                    </div>
+                    }
                 </div>
             </div>
         )
