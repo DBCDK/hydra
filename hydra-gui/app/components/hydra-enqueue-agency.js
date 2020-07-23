@@ -112,7 +112,7 @@ class HydraEnqueueAgency extends React.Component {
                         <div className='form-group'>
                             <label className='control-label col-sm-2'
                                    htmlFor='enqueue-agency-worker'>Vælg worker:</label>
-                            <div className='col-sm-8'>
+                            <div className='col-sm-6'>
                                 <select className='form-control'
                                         id='enqueue-agency-worker'
                                         onChange={this.onChangeWorker}
@@ -124,7 +124,7 @@ class HydraEnqueueAgency extends React.Component {
                         <div className='form-group'>
                             <label className='control-label col-sm-2'
                                    htmlFor='enqueue-agency-priority'>Prioritet:</label>
-                            <div className='col-sm-8'>
+                            <div className='col-sm-6'>
                                 <input type='text' className='form-control'
                                        id='enqueue-agency-priority'
                                        onChange={this.onChangePriority}
@@ -136,19 +136,20 @@ class HydraEnqueueAgency extends React.Component {
                         <div className='form-group'>
                             <label className='control-label col-sm-2'
                                    htmlFor='enqueue-agency-dbc-as-enrichment'>Kø DBC poster som 191919?</label>
-                            <div className='col-sm-8'>
+                            <div className='col-sm-6'>
                                 <Checkbox onChange={this.onChangeEnqueueDBCAsEnrichment}
                                           checked={this.state.enqueueDBCAsEnrichment}
                                           id='enqueue-agency-dbc-as-enrichment'
                                           disabled={this.state.isLoading}/>
                             </div>
+                            <p>Hvis man f.eks. gerne vil have alle 870970 poster på kø til basis indeks skal man afkrydse dette felt for at for få posterne ud på køen som 191919.</p>
                         </div>
                         <div className='form-group'>
                             <label className='control-label col-sm-2'
                                    htmlFor='enqueue-agency-ids'>
                                 Indtast biblioteksnumrene:
                             </label>
-                            <div className='col-sm-8'>
+                            <div className='col-sm-6'>
                                 <textarea className='form-control'
                                           id='enqueue-agency-ids'
                                           rows={15}
@@ -157,7 +158,7 @@ class HydraEnqueueAgency extends React.Component {
                             </div>
                         </div>
                         <div className='form-group'>
-                            <div className='col-sm-offset-2 col-sm-10'>
+                            <div className='col-sm-offset-2 col-sm-6'>
                                 <Button className='btn btn-success'
                                         onClick={this.enqueue}
                                         disabled={this.state.isLoading}>
@@ -169,7 +170,7 @@ class HydraEnqueueAgency extends React.Component {
                     {this.state.agencyAnalysisList != null &&
                     <div>
                         <h2>Resultat</h2>
-                        <div className='container col-sm-offset-2 col-sm-8'>
+                        <div className='container col-sm-offset-2 col-sm-6'>
                             <BootstrapTable
                                 data={this.state.agencyAnalysisList}
                                 striped={true}

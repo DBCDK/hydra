@@ -114,7 +114,7 @@ class HydraEnqueueRecords extends React.Component {
                             bibliographicRecordId: item.bibliographicRecordId,
                             agencyId: item.agencyId,
                             worker: item.worker,
-                            queued: item.queued
+                            queued: item.queued ? 'Ja' : 'Nej'
                         });
                     });
                     this.setState({recordEnqueueResultList: recordEnqueueResultList});
@@ -135,7 +135,7 @@ class HydraEnqueueRecords extends React.Component {
                         <div className='form-group'>
                             <label className='control-label col-sm-2'
                                    htmlFor='enqueue-record-select-provider'>Vælg provider</label>
-                            <div className='col-sm-8'>
+                            <div className='col-sm-6'>
                                 <select className='form-control'
                                         id='enqueue-record-select-provider'
                                         onChange={this.onChangeProvider}
@@ -143,12 +143,12 @@ class HydraEnqueueRecords extends React.Component {
                                     {this.state.providerOptions}
                                 </select>
                             </div>
-                            {this.getProvidersLink()}
+                            <a href="providers.html" target="_blank">Forklaring</a>
                         </div>
                         <div className='form-group'>
                             <label className='control-label col-sm-2'
                                    htmlFor='enqueue-record-changed'>Changed?</label>
-                            <div className='col-sm-8'>
+                            <div className='col-sm-6'>
                                 <Checkbox onChange={this.onChangeChanged}
                                           checked={this.state.changed}
                                           disabled={this.state.isLoading}
@@ -159,7 +159,7 @@ class HydraEnqueueRecords extends React.Component {
                         <div className='form-group'>
                             <label className='control-label col-sm-2'
                                    htmlFor='enqueue-record-changed'>Leaf?</label>
-                            <div className='col-sm-8'>
+                            <div className='col-sm-6'>
                                 <Checkbox onChange={this.onChangeLeaf}
                                           checked={this.state.leaf}
                                           disabled={this.state.isLoading}
@@ -170,7 +170,7 @@ class HydraEnqueueRecords extends React.Component {
                         <div className='form-group'>
                             <label className='control-label col-sm-2'
                                    htmlFor='enqueue-record-priority'>Prioritet:</label>
-                            <div className='col-sm-8'>
+                            <div className='col-sm-6'>
                                 <input type='text' className='form-control'
                                        id='enqueue-record-priority'
                                        onChange={this.onChangePriority}
@@ -184,7 +184,7 @@ class HydraEnqueueRecords extends React.Component {
                                    htmlFor='enqueue-record-records'>
                                 Indtast post IDer:
                             </label>
-                            <div className='col-sm-8'>
+                            <div className='col-sm-6'>
                                 <textarea className='form-control'
                                           id='enqueue-record-records'
                                           rows={15}
@@ -208,7 +208,7 @@ class HydraEnqueueRecords extends React.Component {
                     {this.state.recordEnqueueResultList != null &&
                     <div>
                         <h2>Resultat</h2>
-                        <div className='container col-sm-offset-2 col-sm-8'>
+                        <div className='container col-sm-offset-2 col-sm-6'>
                             <BootstrapTable
                                 data={this.state.recordEnqueueResultList}
                                 striped={true}
