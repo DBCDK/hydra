@@ -75,7 +75,7 @@ public class QueueAPI {
     private static final String MESSAGE_FAIL_INVALID_AGENCY_FORMAT = "Værdien '%s' har ikke et gyldigt format for et biblioteksnummer";
     private static final String MESSAGE_FAIL_INVALID_AGENCY_LENGTH = "Biblioteksnummeret '%s' skal have en længe på præcis seks tegn";
     private static final String MESSAGE_FAIL_INVAILD_AGENCY_ID = "Biblioteksnummeret '%s' tilhører ikke en af biblioteksgrupperne %s";
-    private static final String MESSAGE_FAIL_INVALID_RECORD_ID_FORMAT = "Værdien '%s' er ikke gyldigt format. Formattet skal være <bibliographicRecordId>:<agencyId>. Id'erne må ikke være tomme.";
+    private static final String MESSAGE_FAIL_INVALID_RECORD_ID_FORMAT = "Værdien '%s' er ikke gyldigt format. Formattet skal være <tekst>:<seks tal>.";
     private static final String MESSAGE_FAIL_QUEUETYPE_NULL = "Der skal angives en køtype";
     private static final String MESSAGE_FAIL_QUEUETYPE = "Køtypen '%s' kunne ikke valideres";
     private static final String MESSAGE_FAIL_PROVIDER_NULL = "Der skal angives en provider";
@@ -89,6 +89,9 @@ public class QueueAPI {
     private static final String MESSAGE_FAIL_SESSION_ID_NOT_FOUND = "SessionId '%s' blev ikke fundet";
     private static final String MESSAGE_FAIL_CHUNK_TOO_BIG = "Chunk index '%s' er for stort";
     private static final String MESSAGE_FAIL_CHUNK_NEGATIVE = "Chunk index må ikke være negativt";
+
+    private static final Pattern PATTERN_RECORD_ID = Pattern.compile("\\w+:\\d{6}"); // matches <something><colon><six digits>
+    private static final Pattern PATTERN_AGENCY_ID = Pattern.compile("(\\d{6})"); // Digit, length of 6
 
     private static final Integer CHUNK_SIZE = 5000;
 
@@ -361,11 +364,11 @@ public class QueueAPI {
             }
 
             final Set<Integer> agencyList = new HashSet<>();
-            final Pattern p = Pattern.compile("(\\d{6})"); // Digit, length of 6
+
             for (String agency : agencies) {
                 // This filtering could be done more efficiently with removeIf, however we want to check the format
                 // so the user can be informed of invalid format
-                if (!p.matcher(agency).find()) {
+                if (!PATTERN_AGENCY_ID.matcher(agency).find()) {
                     throw new QueueException(String.format(MESSAGE_FAIL_INVALID_AGENCY_FORMAT, agency));
                 }
                 if (!allowedAgencies.contains(agency)) {
@@ -510,7 +513,11 @@ public class QueueAPI {
                 for (String agencyIdStr : request.getAgencies().split("\n")) {
                     agencyIdStr = agencyIdStr.trim();
                     if (!agencyIdStr.isEmpty()) {
-                         agencyIds.add(parseAgencyIdString(agencyIdStr));
+                        if (!PATTERN_AGENCY_ID.matcher(agencyIdStr).find()) {
+                            throw new QueueException(String.format(MESSAGE_FAIL_INVALID_AGENCY_FORMAT, agencyIdStr));
+                        }
+
+                        agencyIds.add(Integer.parseInt(agencyIdStr));
                     }
                 }
 
@@ -583,17 +590,13 @@ public class QueueAPI {
                 for (String recordIdStr : request.getRecordIds().split("\n")) {
                     recordIdStr = recordIdStr.trim();
                     if (!recordIdStr.isEmpty()) {
-                        // TODO use regex to validate the format
-                        if (!recordIdStr.contains(":")) {
+                        if (!PATTERN_RECORD_ID.matcher(recordIdStr).find()) {
                             throw new QueueException(String.format(MESSAGE_FAIL_INVALID_RECORD_ID_FORMAT, recordIdStr));
                         }
 
                         final String[] split = recordIdStr.split(":");
-                        if (split.length != 2) {
-                            throw new QueueException(String.format(MESSAGE_FAIL_INVALID_RECORD_ID_FORMAT, recordIdStr));
-                        }
                         final String bibliographicRecordId = split[0].trim();
-                        final int agencyId = parseAgencyIdString(split[1].trim());
+                        final int agencyId = Integer.parseInt(split[1].trim());
 
                         recordIds.add(new RecordId(bibliographicRecordId, agencyId));
                     }
@@ -620,7 +623,7 @@ public class QueueAPI {
                     }
 
                     final EnqueueResultCollectionDTO responseDTO = queueServiceConnector.enqueueRecord(recordId.getAgencyId(), recordId.getBibliographicRecordId(), request.getProvider(), params);
-                    for(EnqueueResultDTO enqueueResultDTO :responseDTO.getEnqueueResults()) {
+                    for (EnqueueResultDTO enqueueResultDTO : responseDTO.getEnqueueResults()) {
                         response.getRecordEnqueueResultList().add(new RecordEnqueueResult(enqueueResultDTO.getBibliographicRecordId(), enqueueResultDTO.getAgencyId(), enqueueResultDTO.getWorker(), enqueueResultDTO.isQueued()));
                     }
                 }
@@ -641,18 +644,6 @@ public class QueueAPI {
             return Response.serverError().entity(ex.toString()).build();
         } finally {
             LOGGER.exit(res);
-        }
-    }
-
-    private int parseAgencyIdString(String agencyIdStr) throws QueueException{
-        if (agencyIdStr.length() != 6) {
-            throw new QueueException(String.format(MESSAGE_FAIL_INVALID_AGENCY_LENGTH, agencyIdStr));
-        }
-
-        try {
-            return Integer.parseInt(agencyIdStr);
-        } catch (NumberFormatException e) {
-            throw new QueueException(String.format(MESSAGE_FAIL_INVALID_AGENCY_FORMAT, agencyIdStr));
         }
     }
 
