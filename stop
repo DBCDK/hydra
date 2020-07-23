@@ -1,0 +1,3 @@
+echo "### Stopping hydra docker ###"
+
+docker stop hydra || exit 1

@@ -1,0 +1,30 @@
+./stop || true
+./build docker || exit 1
+
+echo "### Starting hydra docker ###"
+
+hydra_port=${HYDRA_PORT:-5019}
+docker run --rm --name hydra -d -p ${hydra_port}:8080 \
+    -e INSTANCE_NAME=${USER}_dev \
+    -e OPENAGENCY_URL="http://openagency.addi.dk/2.34/" \
+    -e RAWREPO_URL=${RAWREPO_URL} \
+    -e RAWREPO_RECORD_SERVICE_URL=${RAWREPO_RECORD_SERVICE_URL} \
+    -e HOLDINGS_ITEMS_URL=${HOLDINGS_URL} \
+    -e JAVA_MAX_HEAP_SIZE=2G \
+    docker-io.dbc.dk/hydra:devel
+attempts=0
+max_attempts=60
+until $(curl --output /dev/null --silent --head --fail http://localhost:${hydra_port}/api/hydra/status); do
+    if [ ${attempts} -eq ${max_attempts} ]; then
+        break
+    fi
+
+    printf '.'
+    attempts=$(($attempts+1))
+    sleep 0.5
+done
+
+echo ""
+echo "### Status for hydra service ###"
+curl -vs http://localhost:${hydra_port}/api/hydra/status
+echo ""

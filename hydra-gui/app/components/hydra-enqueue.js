@@ -255,6 +255,8 @@ class HydraEnqueue extends React.Component {
             <div>
                 <div>
                     <h2>Køpålæggelse</h2>
+                    <p>Denne side bruges til at lægge poster på kø ud fra specifikke kriterier.</p>
+                    <br/>
                     <form className='form-horizontal' onSubmit={this.handleQueueValidate}>
                         <div className='form-group'>
                             <label className='control-label col-sm-2'
