@@ -76,7 +76,6 @@ class HydraEnqueueAgency extends React.Component {
             priority: this.state.priority
         });
 
-        console.log(data);
         superagent
             .post('/api/queue/enqueue/agency')
             .send(data)
@@ -93,8 +92,6 @@ class HydraEnqueueAgency extends React.Component {
                     alert('VALIDERING FEJLEDE!\n\n' + res.body.message);
                 } else {
                     let response = res.body;
-                    console.log(response);
-                    console.log(response.agencyAnalysisList);
                     this.setState({
                         agencyAnalysisList: response.agencyAnalysisList,
                     });
@@ -131,7 +128,7 @@ class HydraEnqueueAgency extends React.Component {
                                 <input type='text' className='form-control'
                                        id='enqueue-agency-priority'
                                        onChange={this.onChangePriority}
-                                       value='1000'
+                                       value={this.state.priority}
                                        readOnly={false}
                                        disabled={this.state.isLoading}/>
                             </div>
@@ -141,7 +138,7 @@ class HydraEnqueueAgency extends React.Component {
                                    htmlFor='enqueue-agency-dbc-as-enrichment'>Kø DBC poster som 191919?</label>
                             <div className='col-sm-8'>
                                 <Checkbox onChange={this.onChangeEnqueueDBCAsEnrichment}
-                                          checked={this.enqueueDBCAsEnrichment}
+                                          checked={this.state.enqueueDBCAsEnrichment}
                                           id='enqueue-agency-dbc-as-enrichment'
                                           disabled={this.state.isLoading}/>
                             </div>
