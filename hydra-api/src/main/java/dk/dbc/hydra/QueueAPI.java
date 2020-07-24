@@ -72,9 +72,9 @@ public class QueueAPI {
     private static final XLogger LOGGER = XLoggerFactory.getXLogger(QueueAPI.class);
 
     private static final String MESSAGE_FAIL_NO_RECORDS = "Der blev ikke fundet nogen poster, så intet kan lægges på kø";
-    private static final String MESSAGE_FAIL_INVALID_AGENCY_FORMAT = "Værdien '%s' har ikke et gyldigt format for et biblioteksnummer. Formattet skal være seks tal";
+    private static final String MESSAGE_FAIL_INVALID_AGENCY_FORMAT = "Værdien '%s' har ikke et gyldigt format for et biblioteksnummer. Formatet skal være seks tal";
     private static final String MESSAGE_FAIL_INVAILD_AGENCY_ID = "Biblioteksnummeret '%s' tilhører ikke en af biblioteksgrupperne %s";
-    private static final String MESSAGE_FAIL_INVALID_RECORD_ID_FORMAT = "Værdien '%s' er ikke gyldigt format. Formattet skal være <tekst>:<seks tal>.";
+    private static final String MESSAGE_FAIL_INVALID_RECORD_ID_FORMAT = "Værdien '%s' er ikke gyldigt format. Formatet skal være <tekst>:<seks tal>.";
     private static final String MESSAGE_FAIL_QUEUETYPE_NULL = "Der skal angives en køtype";
     private static final String MESSAGE_FAIL_QUEUETYPE = "Køtypen '%s' kunne ikke valideres";
     private static final String MESSAGE_FAIL_PROVIDER_NULL = "Der skal angives en provider";
