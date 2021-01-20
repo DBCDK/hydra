@@ -31,7 +31,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class QueueAPITest {
+public class QueueAPITest {
     private final JSONBContext jsonbContext = new JSONBContext();
 
     private QueueAPI getQueueBean() {
@@ -50,7 +50,7 @@ class QueueAPITest {
     }
 
     @Test
-    void testGetProviders() throws Exception {
+    public void testGetProviders() throws Exception {
 
         final List<QueueProvider> providerList = new ArrayList<>();
 
@@ -80,7 +80,7 @@ class QueueAPITest {
     }
 
     @Test
-    void testGetCatalogingTemplateSetNotBasisMig() throws Exception {
+    public void testGetCatalogingTemplateSetNotBasisMig() throws Exception {
         final QueueAPI bean = getQueueBean();
 
         when(bean.variables.getenv(ApplicationConstants.INSTANCE_NAME)).thenReturn("test");
@@ -102,7 +102,7 @@ class QueueAPITest {
     }
 
     @Test
-    void testGetCatalogingTemplateSetBasisMig() throws Exception {
+    public void testGetCatalogingTemplateSetBasisMig() throws Exception {
         final QueueAPI bean = getQueueBean();
 
         when(bean.variables.getenv(ApplicationConstants.INSTANCE_NAME)).thenReturn("test_basismig");
@@ -125,7 +125,7 @@ class QueueAPITest {
     }
 
     @Test
-    void testValidateEmptyRequest() throws Exception {
+    public void testValidateEmptyRequest() throws Exception {
         final QueueAPI bean = getQueueBean();
 
         final QueueValidateRequest request = new QueueValidateRequest();
@@ -142,7 +142,7 @@ class QueueAPITest {
     }
 
     @Test
-    void testValidateInvalidProvider() throws Exception {
+    public void testValidateInvalidProvider() throws Exception {
         final QueueAPI bean = getQueueBean();
 
         final QueueValidateRequest request = new QueueValidateRequest();
@@ -160,7 +160,7 @@ class QueueAPITest {
     }
 
     @Test
-    void testValidateNoQueueType() throws Exception {
+    public void testValidateNoQueueType() throws Exception {
         final QueueAPI bean = getQueueBean();
 
         final QueueValidateRequest request = new QueueValidateRequest();
@@ -179,7 +179,7 @@ class QueueAPITest {
     }
 
     @Test
-    void testValidateInvalidQueueType() throws Exception {
+    public void testValidateInvalidQueueType() throws Exception {
         final QueueAPI bean = getQueueBean();
 
         final QueueValidateRequest request = new QueueValidateRequest();
@@ -199,7 +199,7 @@ class QueueAPITest {
     }
 
     @Test
-    void testValidateNoAgency() throws Exception {
+    public void testValidateNoAgency() throws Exception {
         final QueueAPI bean = getQueueBean();
 
         final QueueValidateRequest request = new QueueValidateRequest();
@@ -219,7 +219,7 @@ class QueueAPITest {
     }
 
     @Test
-    void testValidateSpaceAsAgency() throws Exception {
+    public void testValidateSpaceAsAgency() throws Exception {
         final QueueAPI bean = getQueueBean();
 
         final QueueValidateRequest request = new QueueValidateRequest();
@@ -240,7 +240,7 @@ class QueueAPITest {
     }
 
     @Test
-    void testValidateCommasAsAgency() throws Exception {
+    public void testValidateCommasAsAgency() throws Exception {
         final QueueAPI bean = getQueueBean();
 
         final QueueValidateRequest request = new QueueValidateRequest();
@@ -261,7 +261,7 @@ class QueueAPITest {
     }
 
     @Test
-    void testValidateInvalidAgencyIds() throws Exception {
+    public void testValidateInvalidAgencyIds() throws Exception {
         final QueueAPI bean = getQueueBean();
 
         final QueueValidateRequest request = new QueueValidateRequest();
@@ -286,7 +286,7 @@ class QueueAPITest {
     }
 
     @Test
-    void testValidateMixOfAgencies() throws Exception {
+    public void testValidateMixOfAgencies() throws Exception {
         final QueueAPI bean = getQueueBean();
 
         final QueueValidateRequest request = new QueueValidateRequest();
@@ -311,7 +311,7 @@ class QueueAPITest {
     }
 
     @Test
-    void testValidateNoRecords() throws Exception {
+    public void testValidateNoRecords() throws Exception {
         final QueueAPI bean = getQueueBean();
 
         final QueueValidateRequest request = new QueueValidateRequest();
@@ -337,7 +337,7 @@ class QueueAPITest {
     }
 
     @Test
-    void testValidateOk() throws Exception {
+    public void testValidateOk() throws Exception {
         final QueueAPI bean = getQueueBean();
 
         final QueueValidateRequest request = new QueueValidateRequest();
@@ -379,7 +379,7 @@ class QueueAPITest {
     }
 
     @Test
-    void testProcessSessionIdIsNull() throws Exception {
+    public void testProcessSessionIdIsNull() throws Exception {
         final QueueAPI bean = getQueueBean();
 
         final QueueProcessRequest request = new QueueProcessRequest();
@@ -396,7 +396,7 @@ class QueueAPITest {
     }
 
     @Test
-    void testProcessSessionIdNotFound() throws Exception {
+    public void testProcessSessionIdNotFound() throws Exception {
         final QueueAPI bean = getQueueBean();
 
         final QueueProcessRequest request = new QueueProcessRequest();
@@ -414,7 +414,7 @@ class QueueAPITest {
     }
 
     @Test
-    void testProcessChunkIndexTooBig() throws Exception {
+    public void testProcessChunkIndexTooBig() throws Exception {
         final QueueAPI bean = getQueueBean();
 
         QueueJob queueJob = new QueueJob();
@@ -439,7 +439,7 @@ class QueueAPITest {
     }
 
     @Test
-    void testProcessChunkIndexTooSmall() throws Exception {
+    public void testProcessChunkIndexTooSmall() throws Exception {
         final QueueAPI bean = getQueueBean();
 
         QueueJob queueJob = new QueueJob();
