@@ -8,10 +8,10 @@ package dk.dbc.hydra;
 import dk.dbc.commons.jsonb.JSONBContext;
 import dk.dbc.commons.jsonb.JSONBException;
 import dk.dbc.hydra.common.ApplicationConstants;
-import dk.dbc.hydra.dao.OpenAgencyConnector;
+import dk.dbc.hydra.dao.VipCoreConnector;
 import dk.dbc.hydra.timer.Stopwatch;
 import dk.dbc.hydra.timer.StopwatchInterceptor;
-import dk.dbc.openagency.client.OpenAgencyException;
+import dk.dbc.vipcore.exception.VipCoreException;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 
@@ -33,7 +33,7 @@ public class LibraryAPI {
     private static final XLogger LOGGER = XLoggerFactory.getXLogger(LibraryAPI.class);
 
     @EJB
-    private OpenAgencyConnector openAgency;
+    private VipCoreConnector vipCoreConnector;
 
     private final JSONBContext mapper = new JSONBContext();
 
@@ -46,12 +46,12 @@ public class LibraryAPI {
         String res = "";
         try {
             try {
-                Set<String> libraries = openAgency.getLibrariesByCatalogingTemplateSet(template);
+                Set<String> libraries = vipCoreConnector.getLibrariesByCatalogingTemplateSet(template);
 
                 res = mapper.marshall(libraries);
 
                 return Response.ok(res, MediaType.APPLICATION_JSON).build();
-            } catch (OpenAgencyException | JSONBException e) {
+            } catch (VipCoreException | JSONBException e) {
                 LOGGER.error(e.getMessage());
                 return Response.serverError().build();
             }

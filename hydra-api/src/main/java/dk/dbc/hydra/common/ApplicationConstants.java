@@ -7,6 +7,10 @@ package dk.dbc.hydra.common;
 
 public class ApplicationConstants {
 
+    private ApplicationConstants() {
+
+    }
+
     public static final String API_QUEUE = "/queue";
     public static final String API_QUEUE_VALIDATE = "validate";
     public static final String API_QUEUE_PROCESS = "process";
@@ -28,14 +32,6 @@ public class ApplicationConstants {
     public static final String API_ERRORS = "/errors";
     public static final String API_ERRORS_WORKERS = "/byWorker";
     public static final String API_ERRORS_TYPE = "/byType";
-
-    public static final String OPENAGENCY_URL = "OPENAGENCY_URL";
-    public static final String OPENAGENCY_CACHE_AGE = "OPENAGENCY_CACHE_AGE";
-    public static final String OPENAGENCY_CACHE_AGE_DEFAULT = String.valueOf(8); // 8 hours
-    public static final String OPENAGENCY_CONNECT_TIMEOUT = "OPENAGENCY_CONNECT_TIMEOUT";
-    public static final String OPENAGENCY_CONNECT_TIMEOUT_DEFAULT = String.valueOf(60 * 1000); // One minute
-    public static final String OPENAGENCY_REQUEST_TIMEOUT = "OPENAGENCY_REQUEST_TIMEOUT";
-    public static final String OPENAGENCY_REQUEST_TIMEOUT_DEFAULT = String.valueOf(3 * 60 * 1000); // Three minutes
 
     public static final String INSTANCE_NAME = "INSTANCE_NAME";
 }

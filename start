@@ -6,7 +6,7 @@ echo "### Starting hydra docker ###"
 hydra_port=${HYDRA_PORT:-5019}
 docker run --rm --name hydra -d -p ${hydra_port}:8080 \
     -e INSTANCE_NAME=${USER}_dev \
-    -e OPENAGENCY_URL="http://openagency.addi.dk/2.34/" \
+    -e VIPCORE_ENDPOINT=${VIPCORE_ENDPOINT} \
     -e RAWREPO_URL=${RAWREPO_URL} \
     -e RAWREPO_RECORD_SERVICE_URL=${RAWREPO_RECORD_SERVICE_URL} \
     -e HOLDINGS_ITEMS_URL=${HOLDINGS_URL} \

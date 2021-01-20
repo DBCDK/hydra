@@ -4,8 +4,8 @@ import dk.dbc.commons.jsonb.JSONBContext;
 import dk.dbc.hydra.common.ApplicationConstants;
 import dk.dbc.hydra.common.EnvironmentVariables;
 import dk.dbc.hydra.dao.HoldingsItemsConnector;
-import dk.dbc.hydra.dao.OpenAgencyConnector;
 import dk.dbc.hydra.dao.RawRepoConnector;
+import dk.dbc.hydra.dao.VipCoreConnector;
 import dk.dbc.hydra.queue.QueueJob;
 import dk.dbc.hydra.queue.QueueProcessRequest;
 import dk.dbc.hydra.queue.QueueProcessResponse;
@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,17 +31,17 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class QueueAPITest {
+class QueueAPITest {
     private final JSONBContext jsonbContext = new JSONBContext();
 
     private QueueAPI getQueueBean() {
-        final OpenAgencyConnector openAgency = mock(OpenAgencyConnector.class);
+        final VipCoreConnector vipCoreConnector = mock(VipCoreConnector.class);
         final RawRepoConnector rawrepo = mock(RawRepoConnector.class);
         final HoldingsItemsConnector holdingsItemsConnector = mock(HoldingsItemsConnector.class);
         final EnvironmentVariables environmentVariables = mock(EnvironmentVariables.class);
 
         final QueueAPI bean = new QueueAPI();
-        bean.openAgency = openAgency;
+        bean.vipCoreConnector = vipCoreConnector;
         bean.rawrepo = rawrepo;
         bean.holdingsItemsConnector = holdingsItemsConnector;
         bean.variables = environmentVariables;
@@ -50,7 +50,7 @@ public class QueueAPITest {
     }
 
     @Test
-    public void testGetProviders() throws Exception {
+    void testGetProviders() throws Exception {
 
         final List<QueueProvider> providerList = new ArrayList<>();
 
@@ -80,7 +80,7 @@ public class QueueAPITest {
     }
 
     @Test
-    public void testGetCatalogingTemplateSetNotBasisMig() throws Exception {
+    void testGetCatalogingTemplateSetNotBasisMig() throws Exception {
         final QueueAPI bean = getQueueBean();
 
         when(bean.variables.getenv(ApplicationConstants.INSTANCE_NAME)).thenReturn("test");
@@ -102,7 +102,7 @@ public class QueueAPITest {
     }
 
     @Test
-    public void testGetCatalogingTemplateSetBasisMig() throws Exception {
+    void testGetCatalogingTemplateSetBasisMig() throws Exception {
         final QueueAPI bean = getQueueBean();
 
         when(bean.variables.getenv(ApplicationConstants.INSTANCE_NAME)).thenReturn("test_basismig");
@@ -125,7 +125,7 @@ public class QueueAPITest {
     }
 
     @Test
-    public void testValidateEmptyRequest() throws Exception {
+    void testValidateEmptyRequest() throws Exception {
         final QueueAPI bean = getQueueBean();
 
         final QueueValidateRequest request = new QueueValidateRequest();
@@ -142,7 +142,7 @@ public class QueueAPITest {
     }
 
     @Test
-    public void testValidateInvalidProvider() throws Exception {
+    void testValidateInvalidProvider() throws Exception {
         final QueueAPI bean = getQueueBean();
 
         final QueueValidateRequest request = new QueueValidateRequest();
@@ -160,13 +160,13 @@ public class QueueAPITest {
     }
 
     @Test
-    public void testValidateNoQueueType() throws Exception {
+    void testValidateNoQueueType() throws Exception {
         final QueueAPI bean = getQueueBean();
 
         final QueueValidateRequest request = new QueueValidateRequest();
         request.setProvider("the-real-provider");
 
-        when(bean.rawrepo.getProviders()).thenReturn(Arrays.asList(new QueueProvider("the-real-provider")));
+        when(bean.rawrepo.getProviders()).thenReturn(Collections.singletonList(new QueueProvider("the-real-provider")));
         final Response response = bean.validate(jsonbContext.marshall(request));
 
         assertThat("Response code 200", response.getStatus(), is(200));
@@ -179,14 +179,14 @@ public class QueueAPITest {
     }
 
     @Test
-    public void testValidateInvalidQueueType() throws Exception {
+    void testValidateInvalidQueueType() throws Exception {
         final QueueAPI bean = getQueueBean();
 
         final QueueValidateRequest request = new QueueValidateRequest();
         request.setProvider("the-real-provider");
         request.setQueueType("grydesteg");
 
-        when(bean.rawrepo.getProviders()).thenReturn(Arrays.asList(new QueueProvider("the-real-provider")));
+        when(bean.rawrepo.getProviders()).thenReturn(Collections.singletonList(new QueueProvider("the-real-provider")));
         final Response response = bean.validate(jsonbContext.marshall(request));
 
         assertThat("Response code 200", response.getStatus(), is(200));
@@ -199,14 +199,14 @@ public class QueueAPITest {
     }
 
     @Test
-    public void testValidateNoAgency() throws Exception {
+    void testValidateNoAgency() throws Exception {
         final QueueAPI bean = getQueueBean();
 
         final QueueValidateRequest request = new QueueValidateRequest();
         request.setProvider("the-real-provider");
         request.setQueueType("ffu");
 
-        when(bean.rawrepo.getProviders()).thenReturn(Arrays.asList(new QueueProvider("the-real-provider")));
+        when(bean.rawrepo.getProviders()).thenReturn(Collections.singletonList(new QueueProvider("the-real-provider")));
         final Response response = bean.validate(jsonbContext.marshall(request));
 
         assertThat("Response code 200", response.getStatus(), is(200));
@@ -219,7 +219,7 @@ public class QueueAPITest {
     }
 
     @Test
-    public void testValidateSpaceAsAgency() throws Exception {
+    void testValidateSpaceAsAgency() throws Exception {
         final QueueAPI bean = getQueueBean();
 
         final QueueValidateRequest request = new QueueValidateRequest();
@@ -227,7 +227,7 @@ public class QueueAPITest {
         request.setQueueType("ffu");
         request.setAgencyText(" ");
 
-        when(bean.rawrepo.getProviders()).thenReturn(Arrays.asList(new QueueProvider("the-real-provider")));
+        when(bean.rawrepo.getProviders()).thenReturn(Collections.singletonList(new QueueProvider("the-real-provider")));
         final Response response = bean.validate(jsonbContext.marshall(request));
 
         assertThat("Response code 200", response.getStatus(), is(200));
@@ -240,7 +240,7 @@ public class QueueAPITest {
     }
 
     @Test
-    public void testValidateCommasAsAgency() throws Exception {
+    void testValidateCommasAsAgency() throws Exception {
         final QueueAPI bean = getQueueBean();
 
         final QueueValidateRequest request = new QueueValidateRequest();
@@ -248,7 +248,7 @@ public class QueueAPITest {
         request.setQueueType("ffu");
         request.setAgencyText(" ,,,,, \n");
 
-        when(bean.rawrepo.getProviders()).thenReturn(Arrays.asList(new QueueProvider("the-real-provider")));
+        when(bean.rawrepo.getProviders()).thenReturn(Collections.singletonList(new QueueProvider("the-real-provider")));
         final Response response = bean.validate(jsonbContext.marshall(request));
 
         assertThat("Response code 200", response.getStatus(), is(200));
@@ -261,7 +261,7 @@ public class QueueAPITest {
     }
 
     @Test
-    public void testValidateInvalidAgencyIds() throws Exception {
+    void testValidateInvalidAgencyIds() throws Exception {
         final QueueAPI bean = getQueueBean();
 
         final QueueValidateRequest request = new QueueValidateRequest();
@@ -272,8 +272,8 @@ public class QueueAPITest {
         Set<String> agencies = new HashSet<>();
         agencies.add("111111");
 
-        when(bean.rawrepo.getProviders()).thenReturn(Arrays.asList(new QueueProvider("the-real-provider")));
-        when(bean.openAgency.getLibrariesByCatalogingTemplateSet("ffu")).thenReturn(agencies);
+        when(bean.rawrepo.getProviders()).thenReturn(Collections.singletonList(new QueueProvider("the-real-provider")));
+        when(bean.vipCoreConnector.getLibrariesByCatalogingTemplateSet("ffu")).thenReturn(agencies);
         final Response response = bean.validate(jsonbContext.marshall(request));
 
         assertThat("Response code 200", response.getStatus(), is(200));
@@ -286,7 +286,7 @@ public class QueueAPITest {
     }
 
     @Test
-    public void testValidateMixOfAgencies() throws Exception {
+    void testValidateMixOfAgencies() throws Exception {
         final QueueAPI bean = getQueueBean();
 
         final QueueValidateRequest request = new QueueValidateRequest();
@@ -297,8 +297,8 @@ public class QueueAPITest {
         Set<String> agencies = new HashSet<>();
         agencies.add("111111");
 
-        when(bean.rawrepo.getProviders()).thenReturn(Arrays.asList(new QueueProvider("the-real-provider")));
-        when(bean.openAgency.getLibrariesByCatalogingTemplateSet("ffu")).thenReturn(agencies);
+        when(bean.rawrepo.getProviders()).thenReturn(Collections.singletonList(new QueueProvider("the-real-provider")));
+        when(bean.vipCoreConnector.getLibrariesByCatalogingTemplateSet("ffu")).thenReturn(agencies);
         final Response response = bean.validate(jsonbContext.marshall(request));
 
         assertThat("Response code 200", response.getStatus(), is(200));
@@ -311,7 +311,7 @@ public class QueueAPITest {
     }
 
     @Test
-    public void testValidateNoRecords() throws Exception {
+    void testValidateNoRecords() throws Exception {
         final QueueAPI bean = getQueueBean();
 
         final QueueValidateRequest request = new QueueValidateRequest();
@@ -323,8 +323,8 @@ public class QueueAPITest {
         Set<String> agenciesStringSet = new HashSet<>();
         agenciesStringSet.add("111111");
 
-        when(bean.rawrepo.getProviders()).thenReturn(Arrays.asList(new QueueProvider("the-real-provider")));
-        when(bean.openAgency.getLibrariesByCatalogingTemplateSet("ffu")).thenReturn(agenciesStringSet);
+        when(bean.rawrepo.getProviders()).thenReturn(Collections.singletonList(new QueueProvider("the-real-provider")));
+        when(bean.vipCoreConnector.getLibrariesByCatalogingTemplateSet("ffu")).thenReturn(agenciesStringSet);
         final Response response = bean.validate(jsonbContext.marshall(request));
 
         assertThat("Response code 200", response.getStatus(), is(200));
@@ -337,7 +337,7 @@ public class QueueAPITest {
     }
 
     @Test
-    public void testValidateOk() throws Exception {
+    void testValidateOk() throws Exception {
         final QueueAPI bean = getQueueBean();
 
         final QueueValidateRequest request = new QueueValidateRequest();
@@ -355,9 +355,9 @@ public class QueueAPITest {
         final Set<RecordId> recordIdSet = new HashSet<>();
         recordIdSet.add(new RecordId("11223344", 111111));
 
-        when(bean.rawrepo.getProviders()).thenReturn(Arrays.asList(new QueueProvider("the-real-provider")));
+        when(bean.rawrepo.getProviders()).thenReturn(Collections.singletonList(new QueueProvider("the-real-provider")));
         when(bean.rawrepo.getRecordsForAgencies(agenciesIntegerSet, false)).thenReturn(recordIdSet);
-        when(bean.openAgency.getLibrariesByCatalogingTemplateSet("ffu")).thenReturn(agenciesStringSet);
+        when(bean.vipCoreConnector.getLibrariesByCatalogingTemplateSet("ffu")).thenReturn(agenciesStringSet);
         final Response response = bean.validate(jsonbContext.marshall(request));
 
         assertThat("Response code 200", response.getStatus(), is(200));
@@ -379,7 +379,7 @@ public class QueueAPITest {
     }
 
     @Test
-    public void testProcessSessionIdIsNull() throws Exception {
+    void testProcessSessionIdIsNull() throws Exception {
         final QueueAPI bean = getQueueBean();
 
         final QueueProcessRequest request = new QueueProcessRequest();
@@ -396,7 +396,7 @@ public class QueueAPITest {
     }
 
     @Test
-    public void testProcessSessionIdNotFound() throws Exception {
+    void testProcessSessionIdNotFound() throws Exception {
         final QueueAPI bean = getQueueBean();
 
         final QueueProcessRequest request = new QueueProcessRequest();
@@ -414,7 +414,7 @@ public class QueueAPITest {
     }
 
     @Test
-    public void testProcessChunkIndexTooBig() throws Exception {
+    void testProcessChunkIndexTooBig() throws Exception {
         final QueueAPI bean = getQueueBean();
 
         QueueJob queueJob = new QueueJob();
@@ -439,7 +439,7 @@ public class QueueAPITest {
     }
 
     @Test
-    public void testProcessChunkIndexTooSmall() throws Exception {
+    void testProcessChunkIndexTooSmall() throws Exception {
         final QueueAPI bean = getQueueBean();
 
         QueueJob queueJob = new QueueJob();
@@ -464,7 +464,7 @@ public class QueueAPITest {
     }
 
     @Test
-    public void testProcessOkFullFlow() throws Exception {
+    void testProcessOkFullFlow() throws Exception {
         final QueueAPI bean = getQueueBean();
 
         final QueueValidateRequest validateRequest = new QueueValidateRequest();
@@ -482,9 +482,9 @@ public class QueueAPITest {
         final Set<RecordId> recordIdSet = new HashSet<>();
         recordIdSet.add(new RecordId("11223344", 111111));
 
-        when(bean.rawrepo.getProviders()).thenReturn(Arrays.asList(new QueueProvider("the-real-provider")));
+        when(bean.rawrepo.getProviders()).thenReturn(Collections.singletonList(new QueueProvider("the-real-provider")));
         when(bean.rawrepo.getRecordsForAgencies(agenciesIntegerSet, false)).thenReturn(recordIdSet);
-        when(bean.openAgency.getLibrariesByCatalogingTemplateSet("ffu")).thenReturn(agenciesStringSets);
+        when(bean.vipCoreConnector.getLibrariesByCatalogingTemplateSet("ffu")).thenReturn(agenciesStringSets);
         final Response validateResponse = bean.validate(jsonbContext.marshall(validateRequest));
 
         assertThat("Response code 200 - validate", validateResponse.getStatus(), is(200));
