@@ -1,8 +1,6 @@
 package dk.dbc.hydra;
 
 import dk.dbc.commons.jsonb.JSONBContext;
-import dk.dbc.hydra.common.ApplicationConstants;
-import dk.dbc.hydra.common.EnvironmentVariables;
 import dk.dbc.hydra.dao.HoldingsItemsConnector;
 import dk.dbc.hydra.dao.RawRepoConnector;
 import dk.dbc.hydra.dao.VipCoreConnector;
@@ -16,7 +14,6 @@ import dk.dbc.hydra.queue.QueueValidateResponse;
 import dk.dbc.hydra.queue.QueueWorker;
 import dk.dbc.rawrepo.RecordId;
 import org.junit.jupiter.api.Test;
-
 
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
@@ -38,20 +35,17 @@ public class QueueAPITest {
         final VipCoreConnector vipCoreConnector = mock(VipCoreConnector.class);
         final RawRepoConnector rawrepo = mock(RawRepoConnector.class);
         final HoldingsItemsConnector holdingsItemsConnector = mock(HoldingsItemsConnector.class);
-        final EnvironmentVariables environmentVariables = mock(EnvironmentVariables.class);
 
         final QueueAPI bean = new QueueAPI();
         bean.vipCoreConnector = vipCoreConnector;
         bean.rawrepo = rawrepo;
         bean.holdingsItemsConnector = holdingsItemsConnector;
-        bean.variables = environmentVariables;
 
         return bean;
     }
 
     @Test
     public void testGetProviders() throws Exception {
-
         final List<QueueProvider> providerList = new ArrayList<>();
 
         final QueueWorker worker1 = new QueueWorker("worker1", "T", "F");
@@ -82,8 +76,7 @@ public class QueueAPITest {
     @Test
     public void testGetCatalogingTemplateSetNotBasisMig() throws Exception {
         final QueueAPI bean = getQueueBean();
-
-        when(bean.variables.getenv(ApplicationConstants.INSTANCE_NAME)).thenReturn("test");
+        bean.INSTANCE_NAME = "test";
 
         final List<QueueType> expected = new ArrayList<>();
         expected.add(QueueType.ffu());
@@ -104,8 +97,7 @@ public class QueueAPITest {
     @Test
     public void testGetCatalogingTemplateSetBasisMig() throws Exception {
         final QueueAPI bean = getQueueBean();
-
-        when(bean.variables.getenv(ApplicationConstants.INSTANCE_NAME)).thenReturn("test_basismig");
+        bean.INSTANCE_NAME = "test_basismig";
 
         final List<QueueType> expected = new ArrayList<>();
         expected.add(QueueType.ffu());
