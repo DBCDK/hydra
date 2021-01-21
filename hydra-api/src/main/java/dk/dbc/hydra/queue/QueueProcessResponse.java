@@ -10,9 +10,6 @@ public class QueueProcessResponse {
     private boolean validated;
     private String message;
 
-    public QueueProcessResponse() {
-    }
-
     public boolean isValidated() {
         return validated;
     }

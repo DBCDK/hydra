@@ -10,9 +10,6 @@ public class QueueProcessRequest {
     private String sessionId;
     private int chunkIndex;
 
-    public QueueProcessRequest() {
-    }
-
     public String getSessionId() {
         return sessionId;
     }
