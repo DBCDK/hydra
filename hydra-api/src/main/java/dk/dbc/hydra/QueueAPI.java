@@ -9,10 +9,9 @@ import dk.dbc.commons.jsonb.JSONBContext;
 import dk.dbc.commons.jsonb.JSONBException;
 import dk.dbc.holdingsitems.HoldingsItemsException;
 import dk.dbc.hydra.common.ApplicationConstants;
-import dk.dbc.hydra.common.EnvironmentVariables;
 import dk.dbc.hydra.dao.HoldingsItemsConnector;
-import dk.dbc.hydra.dao.OpenAgencyConnector;
 import dk.dbc.hydra.dao.RawRepoConnector;
+import dk.dbc.hydra.dao.VipCoreConnector;
 import dk.dbc.hydra.queue.AgencyAnalysis;
 import dk.dbc.hydra.queue.EnqueueAgencyRequest;
 import dk.dbc.hydra.queue.EnqueueAgencyResponse;
@@ -29,7 +28,6 @@ import dk.dbc.hydra.queue.QueueValidateResponse;
 import dk.dbc.hydra.queue.RecordEnqueueResult;
 import dk.dbc.hydra.timer.Stopwatch;
 import dk.dbc.hydra.timer.StopwatchInterceptor;
-import dk.dbc.openagency.client.OpenAgencyException;
 import dk.dbc.rawrepo.RecordId;
 import dk.dbc.rawrepo.dto.EnqueueAgencyResponseDTO;
 import dk.dbc.rawrepo.dto.EnqueueResultCollectionDTO;
@@ -37,9 +35,12 @@ import dk.dbc.rawrepo.dto.EnqueueResultDTO;
 import dk.dbc.rawrepo.dto.QueueWorkerCollectionDTO;
 import dk.dbc.rawrepo.queue.QueueServiceConnector;
 import dk.dbc.rawrepo.queue.QueueServiceConnectorException;
+import dk.dbc.vipcore.exception.VipCoreException;
 import org.apache.commons.collections4.map.PassiveExpiringMap;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
+
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -95,7 +96,7 @@ public class QueueAPI {
     private static final Integer CHUNK_SIZE = 5000;
 
     @EJB
-    OpenAgencyConnector openAgency;
+    VipCoreConnector vipCoreConnector;
 
     @EJB
     RawRepoConnector rawrepo;
@@ -103,11 +104,12 @@ public class QueueAPI {
     @EJB
     HoldingsItemsConnector holdingsItemsConnector;
 
-    @EJB
-    EnvironmentVariables variables;
-
     @Inject
     QueueServiceConnector queueServiceConnector;
+
+    @Inject
+    @ConfigProperty(name = "INSTANCE_NAME", defaultValue = "dev")
+    String INSTANCE_NAME;
 
     private final JSONBContext jsonbContext = new JSONBContext();
 
@@ -122,7 +124,7 @@ public class QueueAPI {
     public Response validate(String inputStr) {
         String res = "";
         final QueueValidateResponse response = new QueueValidateResponse();
-        String sessionId = UUID.randomUUID().toString();
+        final String sessionId = UUID.randomUUID().toString();
 
         try {
             try {
@@ -133,7 +135,7 @@ public class QueueAPI {
                 final QueueJob queueJob = prepareQueueJob(queueValidateRequest);
                 loadRecordIdsForQueuing(queueJob);
 
-                if (queueJob.getRecordIdList().size() == 0) {
+                if (queueJob.getRecordIdList().isEmpty()) {
                     throw new QueueException(MESSAGE_FAIL_NO_RECORDS);
                 }
 
@@ -346,19 +348,19 @@ public class QueueAPI {
             agencyString = agencyString.replace("\n", ",");
             agencyString = agencyString.replace(" ", ",");
             // Remove eventual double or triple commas as a result of the replace
-            while (agencyString.indexOf(",,") > 0) {
+            while (agencyString.contains(",,")) {
                 agencyString = agencyString.replace(",,", ",");
             }
             final List<String> agencies = Arrays.asList(agencyString.split(","));
 
             final Set<String> allowedAgencies = new HashSet<>();
             for (String catalogingTemplateSet : queueType.getCatalogingTemplateSets()) {
-                allowedAgencies.addAll(openAgency.getLibrariesByCatalogingTemplateSet(catalogingTemplateSet));
+                allowedAgencies.addAll(vipCoreConnector.getLibrariesByCatalogingTemplateSet(catalogingTemplateSet));
             }
 
             agencies.forEach(s -> s = s.trim());
 
-            if (agencies.size() == 0) {
+            if (agencies.isEmpty()) {
                 throw new QueueException(MESSAGE_FAIL_AGENCY_MISSING);
             }
 
@@ -378,7 +380,7 @@ public class QueueAPI {
             queueJob.setAgencyIdList(agencyList);
 
             return queueJob;
-        } catch (SQLException | OpenAgencyException ex) {
+        } catch (SQLException | VipCoreException ex) {
             LOGGER.error("Exception during prepareQueueJob", ex);
             throw new QueueException("Exception during prepareQueueJob: " + ex.toString());
         } finally {
@@ -450,7 +452,7 @@ public class QueueAPI {
             queueTypes.add(QueueType.ims());
 
             // Hack to only enable DBC queue type on basismig environment
-            if (variables.getenv(ApplicationConstants.INSTANCE_NAME).toLowerCase().contains("basismig")) {
+            if (INSTANCE_NAME.toLowerCase().contains("basismig")) {
                 queueTypes.add(QueueType.dbcCommon());
             }
 

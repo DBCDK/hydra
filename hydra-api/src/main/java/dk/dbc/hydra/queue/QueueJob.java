@@ -17,10 +17,6 @@ public class QueueJob {
     private QueueType queueType;
     private boolean includeDeleted;
 
-    public QueueJob() {
-
-    }
-
     public Set<RecordId> getRecordIdList() {
         return recordIdList;
     }

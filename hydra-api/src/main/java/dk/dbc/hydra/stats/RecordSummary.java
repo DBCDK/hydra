@@ -9,11 +9,11 @@ import java.util.Date;
 
 public class RecordSummary {
 
-    private int agencyId;
-    private int originalCount;
-    private int enrichmentCount;
-    private int deletedCount;
-    private Date ajourDate;
+    private final int agencyId;
+    private final int originalCount;
+    private final int enrichmentCount;
+    private final int deletedCount;
+    private final Date ajourDate;
 
     public RecordSummary(int agencyId, int originalCount, int enrichmentCount, int deletedCount, Date ajourDate) {
         this.agencyId = agencyId;

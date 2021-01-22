@@ -12,10 +12,6 @@ public class QueueValidateRequest {
     private String agencyText;
     private boolean includeDeleted;
 
-    public QueueValidateRequest() {
-
-    }
-
     public String getQueueType() {
         return queueType;
     }

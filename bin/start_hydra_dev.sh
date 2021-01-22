@@ -60,7 +60,7 @@ echo "Starting container"
 container_id=`docker run -it ${detached} -p ${port}:8080 \
         -e RAWREPO_URL="${rr_user}:${rr_pass}@${rr_conn}" \
         -e HOLDINGS_ITEMS_URL="${hi_user} ${hi_user}:${hi_pass}@${hi_conn}" \
-		-e OPENAGENCY_URL="http://openagency.addi.dk/test_2.33/" \
+		-e VIPCORE_ENDPOINT="http://vipcore.iscrum-vip-extern-test.svc.cloud.dbc.dk" \
 		-e INSTANCE_NAME="${USER}_dev_basismig" \
 		-e JAVA_MAX_HEAP_SIZE="2G" \
 		 ${docker_image}:${version}`

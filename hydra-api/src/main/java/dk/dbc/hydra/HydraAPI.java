@@ -7,10 +7,12 @@ package dk.dbc.hydra;
 
 import dk.dbc.hydra.common.ApplicationConstants;
 import dk.dbc.hydra.timer.StopwatchInterceptor;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
@@ -25,6 +27,10 @@ import javax.ws.rs.core.Response;
 @Path(ApplicationConstants.API_HYDRA)
 public class HydraAPI {
     private static final XLogger LOGGER = XLoggerFactory.getXLogger(HydraAPI.class);
+
+    @Inject
+    @ConfigProperty(name = "INSTANCE_NAME", defaultValue = "INSTANCE_NAME not set")
+    String INSTANCE_NAME;
 
     @GET
     @Produces({MediaType.APPLICATION_JSON})
@@ -41,7 +47,7 @@ public class HydraAPI {
         String res = "";
         try {
             JsonObjectBuilder jsonObject = Json.createObjectBuilder();
-            jsonObject.add("value", System.getenv().getOrDefault(ApplicationConstants.INSTANCE_NAME, "INSTANCE_NAME not set"));
+            jsonObject.add("value", INSTANCE_NAME);
 
             res = jsonObject.build().toString();
 
