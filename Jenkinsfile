@@ -73,7 +73,7 @@ pipeline {
                 script {
                     dir("deploy") {
                         sh """
-                            set-new-version services/rawrepo-hydra.yml ${env.GITLAB_PRIVATE_TOKEN} metascrum/dit-gitops-secrets DIT-${env.BUILD_NUMBER} -b master
+                            set-new-version services/rawrepo-hydra-tmpl.yml ${env.GITLAB_PRIVATE_TOKEN} metascrum/dit-gitops-secrets DIT-${env.BUILD_NUMBER} -b master
 
                             set-new-version rawrepo-hydra-basismig.yml ${env.GITLAB_PRIVATE_TOKEN} metascrum/rawrepo-hydra-deploy DIT-${env.BUILD_NUMBER} -b basismig
                             set-new-version rawrepo-hydra-fbstest.yml ${env.GITLAB_PRIVATE_TOKEN} metascrum/rawrepo-hydra-deploy DIT-${env.BUILD_NUMBER} -b fbstest
