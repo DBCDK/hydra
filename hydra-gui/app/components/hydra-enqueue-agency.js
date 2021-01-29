@@ -107,6 +107,7 @@ class HydraEnqueueAgency extends React.Component {
                 <div>
                     <h2>Køpålæggelse - bibliotek</h2>
                     <p>Denne side bruges til at lægge alle poster for et eller flere biblioteker på kø.</p>
+                    <p>Midlertidigt slået fra indtil der kommer en bedre løsning!</p>
                     <br/>
                     <form className='form-horizontal'>
                         <div className='form-group'>
@@ -161,7 +162,7 @@ class HydraEnqueueAgency extends React.Component {
                             <div className='col-sm-offset-2 col-sm-6'>
                                 <Button className='btn btn-success'
                                         onClick={this.enqueue}
-                                        disabled={this.state.isLoading}>
+                                        disabled={true}>
                                     Udfør
                                 </Button>
                             </div>
