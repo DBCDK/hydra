@@ -43,7 +43,7 @@ pipeline {
         stage("docker build") {
             steps {
                 script {
-                    def repo = "docker-io.dbc.dk"
+                    def repo = "docker-metascrum.artifacts.dbccloud.dk"
                     def name = "hydra-service"
                     def version = env.BRANCH_NAME + '-' + env.BUILD_NUMBER
                     def image = docker.build("${repo}/${name}:${version}")

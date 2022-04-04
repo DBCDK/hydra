@@ -11,7 +11,7 @@ docker run --rm --name hydra -d -p ${hydra_port}:8080 \
     -e RAWREPO_RECORD_SERVICE_URL=${RAWREPO_RECORD_SERVICE_URL} \
     -e HOLDINGS_ITEMS_URL=${HOLDINGS_URL} \
     -e JAVA_MAX_HEAP_SIZE=2G \
-    docker-io.dbc.dk/hydra:devel
+    docker-metascrum.artifacts.dbccloud.dk/hydra:devel
 attempts=0
 max_attempts=60
 until $(curl --output /dev/null --silent --head --fail http://localhost:${hydra_port}/api/hydra/status); do
