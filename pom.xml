@@ -50,7 +50,7 @@
         <org.bouncycastle.mail.version>1.57</org.bouncycastle.mail.version>
         <org.bouncycastle.provider.version>1.57</org.bouncycastle.provider.version>
         <perf4j.version>0.9.16</perf4j.version>
-        <postgresql.driver.version>9.4-1206-jdbc41</postgresql.driver.version>
+        <postgresql.driver.version>42.3.7</postgresql.driver.version>
         <microprofile.version>1.2</microprofile.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
