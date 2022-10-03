@@ -7,6 +7,7 @@ pipeline {
     tools {
         // refers to the name set in manage jenkins -> global tool configuration
         maven "Maven 3"
+        jdk 'jdk11'
     }
     triggers {
         pollSCM("H/03 * * * *")
