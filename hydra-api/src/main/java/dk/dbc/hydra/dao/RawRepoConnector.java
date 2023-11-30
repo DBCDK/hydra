@@ -15,13 +15,13 @@ import dk.dbc.hydra.stats.RecordSummary;
 import dk.dbc.hydra.timer.Stopwatch;
 import dk.dbc.hydra.timer.StopwatchInterceptor;
 import dk.dbc.rawrepo.RecordId;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
+import jakarta.ejb.Stateless;
+import jakarta.interceptor.Interceptors;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import javax.ejb.Stateless;
-import javax.interceptor.Interceptors;
 import javax.sql.DataSource;
 import java.sql.CallableStatement;
 import java.sql.Connection;

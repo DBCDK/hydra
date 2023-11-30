@@ -10,16 +10,16 @@ import dk.dbc.holdingsitems.HoldingsItemsException;
 import dk.dbc.hydra.timer.Stopwatch;
 import dk.dbc.hydra.timer.StopwatchInterceptor;
 import dk.dbc.rawrepo.RecordId;
+import jakarta.annotation.PostConstruct;
+import jakarta.ejb.Stateless;
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
+import jakarta.interceptor.Interceptors;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.interceptor.Interceptors;
-import javax.sql.DataSource;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -32,20 +32,19 @@ import java.util.Set;
 public class HoldingsItemsConnector {
     private static final XLogger LOGGER = XLoggerFactory.getXLogger(HoldingsItemsConnector.class);
 
-    @Resource(lookup = "jdbc/holdingsitems")
-    private DataSource globalDataSource;
+    @PersistenceContext(unitName = "holdingsItems_PU")
+    private EntityManager entityManager;
 
     @PostConstruct
     public void postConstruct() {
         LOGGER.entry();
-
         if (!healthCheck()) {
             throw new RuntimeException("Unable to connection to Holdings Items"); // Can't throw checked exceptions from postConstruct
         }
     }
 
     public boolean healthCheck() {
-        try (Connection connection = globalDataSource.getConnection()) {
+        try (Connection connection = entityManager.unwrap(Connection.class)) {
             try (CallableStatement stmt = connection.prepareCall("SELECT 1")) {
                 try (ResultSet resultSet = stmt.executeQuery()) {
                     resultSet.next();
@@ -64,16 +63,15 @@ public class HoldingsItemsConnector {
     public Set<RecordId> getHoldingsRecords(Set<Integer> agencies) throws HoldingsItemsException, SQLException {
         LOGGER.entry(agencies);
         Set<RecordId> result = new HashSet<>();
-        try (Connection connection = globalDataSource.getConnection()) {
+        try {
             for (Integer agencyId : agencies) {
-                HoldingsItemsDAO holdingsItemsDAO = HoldingsItemsDAO.newInstance(connection);
+                HoldingsItemsDAO holdingsItemsDAO = HoldingsItemsDAO.newInstance(entityManager);
                 Set<String> bibliographicRecordIds = holdingsItemsDAO.getBibliographicIds(agencyId);
 
                 for (String bibliographicRecordId : bibliographicRecordIds) {
                     result.add(new RecordId(bibliographicRecordId, agencyId));
                 }
             }
-
             return result;
         } finally {
             LOGGER.exit(result);
