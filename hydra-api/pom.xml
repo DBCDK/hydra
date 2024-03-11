@@ -17,11 +17,11 @@
     <packaging>war</packaging>
 
     <dependencies>
-<!--        <dependency>-->
-<!--            <groupId>dk.dbc</groupId>-->
-<!--            <artifactId>hydra-gui</artifactId>-->
-<!--            <version>${project.version}</version>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>dk.dbc</groupId>
+            <artifactId>hydra-gui</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
