@@ -1,13 +1,12 @@
 #!groovy
 
-def workerNode = "devel10"
+def workerNode = "devel11"
 
 pipeline {
     agent { label workerNode }
     tools {
         // refers to the name set in manage jenkins -> global tool configuration
         maven "Maven 3"
-        jdk 'jdk11'
     }
     triggers {
         pollSCM("H/03 * * * *")
