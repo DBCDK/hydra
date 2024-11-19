@@ -35,29 +35,6 @@ public class HoldingsItemsConnector {
     @PersistenceContext(unitName = "holdingsItems_PU")
     private EntityManager entityManager;
 
-    @PostConstruct
-    public void postConstruct() {
-        LOGGER.entry();
-        if (!healthCheck()) {
-            throw new RuntimeException("Unable to connection to Holdings Items"); // Can't throw checked exceptions from postConstruct
-        }
-    }
-
-    public boolean healthCheck() {
-        try (Connection connection = entityManager.unwrap(Connection.class)) {
-            try (CallableStatement stmt = connection.prepareCall("SELECT 1")) {
-                try (ResultSet resultSet = stmt.executeQuery()) {
-                    resultSet.next();
-
-                    return true;
-                }
-            }
-        } catch (SQLException ex) {
-            return false;
-        }
-    }
-
-
     @Stopwatch
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public Set<RecordId> getHoldingsRecords(Set<Integer> agencies) throws HoldingsItemsException, SQLException {
